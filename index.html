@@ -1166,7 +1166,7 @@
       position: fixed;
       bottom: 1.5rem;
       left: 1.5rem;
-      z-index: 50;
+      z-index: 110;
       background: var(--crimson);
       border: none;
       color: var(--white);
@@ -1400,28 +1400,30 @@
       position: absolute;
       bottom: 1.5rem;
       right: 1.5rem;
-      z-index: 60;
+      z-index: 200;
+      /* Higher than header (100) and sidebar content */
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      pointer-events: auto;
+      /* Ensure clickable */
     }
 
     .sidebar-settings-btn {
       background: transparent;
-      /* No background circle */
       border: none;
       color: var(--crimson);
-      /* Inactive color */
       width: 44px;
       height: 44px;
-      border-radius: 0;
-      /* Remove circle shape */
+      border-radius: 50%;
       cursor: pointer;
-      box-shadow: none;
-      /* No shadow */
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.1rem;
-      transition: color 0.3s, transform 0.3s;
+      transition: opacity 0.3s, transform 0.3s;
       padding: 0;
+      /* Ensure it aligns visually with the toggle which has box-shadow */
     }
 
     .sidebar-settings-btn:hover {
@@ -1681,7 +1683,7 @@
       <div class="hero-title">The Archive<br>Oracle</div>
       <div class="hero-ornament">✦ ✦ ✦</div>
       <p class="hero-desc">"Close your eyes, can keep your mind wide open."<br><span class="hero-attribution">—
-          Catherine Patterson</span></p>
+          Katherine Paterson</span></p>
       <div class="hero-actions">
         <button class="btn btn-primary" onclick="showPage('library')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -1968,6 +1970,20 @@
       if (!exists) {
         library.unshift(fic);
         saveLibraryToStorage();
+      } else {
+        // Update title/author if it was Untitled or empty, and new data is better
+        let updated = false;
+        if ((!exists.title || exists.title === 'Untitled') && fic.title && fic.title !== 'Untitled') {
+          exists.title = fic.title;
+          updated = true;
+        }
+        if ((!exists.author || exists.author === 'N/A') && fic.author) {
+          exists.author = fic.author;
+          updated = true;
+        }
+        if (updated) {
+          saveLibraryToStorage();
+        }
       }
     }
 
