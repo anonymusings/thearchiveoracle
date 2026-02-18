@@ -549,6 +549,32 @@
       opacity: 1;
     }
 
+    .control-label {
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ash-light);
+      margin-bottom: 0.4rem;
+      display: block;
+    }
+
+    .control-btn {
+      background: #1a1a1a;
+      border: 1px solid rgba(111, 31, 30, 0.3);
+      color: var(--ash-light);
+      padding: 0.4rem 0.6rem;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+    }
+
     .fic-card-ext {
       font-family: var(--font-display);
       font-size: 0.55rem;
@@ -746,23 +772,21 @@
       flex-direction: column;
     }
 
-    /* Sidebar toggle and settings button only visible on reader page */
-    #page-reader .sidebar-toggle,
-    #page-reader .sidebar-settings-container {
+    /* Sidebar toggle visibility */
+    #page-reader .sidebar-toggle {
       display: none;
     }
 
-    #page-reader.active .sidebar-toggle,
-    #page-reader.active .sidebar-settings-container {
+    #page-reader.active .sidebar-toggle {
       display: flex;
     }
 
     .reader-layout {
       display: flex;
-      height: calc(100vh - 64px);
+      height: 100vh;
+      /* Fill entire screen by default */
       overflow: hidden;
       position: relative;
-      transition: height 0.3s var(--ease-out);
     }
 
     /* Sidebar */
@@ -773,9 +797,18 @@
       border-right: 1px solid rgba(111, 31, 30, 0.25);
       display: flex;
       flex-direction: column;
-      overflow-y: auto;
+      overflow: visible;
+      /* Crucial for dialog box to show up outside sidebar bounds */
       position: relative;
       transition: transform 0.3s var(--ease-out);
+      z-index: 200;
+    }
+
+    .sidebar-scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
     }
 
     .sidebar-meta {
@@ -1234,13 +1267,14 @@
       position: absolute;
       bottom: calc(100% + 0.75rem);
       right: 0;
-      width: 280px;
-      z-index: 400;
+      width: 240px;
+      /* Slimmer to fit within 280px sidebar comfortably */
+      z-index: 250;
       background: #0a0a0a;
       border: 1px solid var(--crimson);
-      border-radius: 6px;
-      padding: 1.25rem;
-      box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.7);
+      border-radius: 4px;
+      padding: 1rem;
+      box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(111, 31, 30, 0.4);
     }
 
     .reader-controls-dialog.open {
@@ -1415,15 +1449,14 @@
        SIDEBAR SETTINGS BUTTON
     ═══════════════════════════════════════════ */
     .sidebar-settings-container {
-      position: fixed;
+      position: absolute;
       bottom: 1.5rem;
       right: 1.5rem;
-      z-index: 300;
+      z-index: 210;
       display: flex;
       flex-direction: column;
       align-items: flex-end;
       pointer-events: auto;
-      transition: transform 0.3s, opacity 0.3s;
     }
 
     .sidebar-settings-btn {
@@ -1474,7 +1507,7 @@
       transform: translateY(-100%);
     }
 
-    body.reader-fullscreen .reader-sidebar {
+    .reader-sidebar {
       top: 0;
       height: 100vh;
       /* Ensure full height */
@@ -1607,8 +1640,10 @@
       }
 
       .sidebar-settings-container {
-        /* On mobile, always show when reader is open - overriding the hidden class logic */
+        /* On mobile, ensure it stays visible within sidebar */
         display: flex;
+        bottom: 1rem;
+        right: 1rem;
       }
 
       .sidebar-settings-container.hidden {
@@ -1792,23 +1827,92 @@
 
       <!-- Sidebar -->
       <div class="reader-sidebar" id="reader-sidebar">
-        <div class="sidebar-meta">
-          <button class="btn btn-ghost btn-sm" onclick="backToLibrary()" style="margin-bottom:1rem;width:100%;"><svg
-              width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg> Back to Library</button>
-          <div class="sidebar-title" id="sidebar-title">—</div>
-          <div class="sidebar-author" id="sidebar-author"></div>
-          <div class="sidebar-tags" id="sidebar-tags"></div>
-          <div class="sidebar-summary" id="sidebar-summary"></div>
-        </div>
-        <div class="sidebar-toc">
-          <div class="toc-heading">Contents</div>
-          <div id="toc-list"></div>
+        <div class="sidebar-scroll-area">
+          <div class="sidebar-meta">
+            <button class="btn btn-ghost btn-sm" onclick="backToLibrary()" style="margin-bottom:1rem;width:100%;"><svg
+                width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg> Back to Library</button>
+            <div class="sidebar-title" id="sidebar-title">—</div>
+            <div class="sidebar-author" id="sidebar-author"></div>
+            <div class="sidebar-tags" id="sidebar-tags"></div>
+            <div class="sidebar-summary" id="sidebar-summary"></div>
+          </div>
+          <div class="sidebar-toc">
+            <div class="toc-heading">Contents</div>
+            <div id="toc-list"></div>
+          </div>
         </div>
 
-        <!-- Settings button is now OUTSIDE the sidebar to avoid overflow:hidden clipping -->
+        <!-- Settings button is back INSIDE the sidebar as requested -->
+        <div class="sidebar-settings-container" id="sidebar-settings-container">
+          <!-- Settings dialog (appears above button) -->
+          <div class="reader-controls-dialog" id="reader-controls-dialog">
+            <!-- Left column: font size + line spacing -->
+            <div class="controls-left">
+              <div class="control-group">
+                <span class="control-label">text size</span>
+                <div class="control-buttons">
+                  <button class="control-btn" onclick="adjustReaderFontSize(10)" title="Increase">Aa+</button>
+                  <button class="control-btn" onclick="adjustReaderFontSize(-10)" title="Decrease">Aa−</button>
+                </div>
+              </div>
+              <div class="control-group">
+                <span class="control-label">line spacing</span>
+                <div class="control-buttons">
+                  <button class="control-btn" onclick="adjustLineHeight(0.1)" title="Increase">+</button>
+                  <button class="control-btn" onclick="adjustLineHeight(-0.1)" title="Decrease">−</button>
+                </div>
+              </div>
+            </div>
+            <!-- Right column: theme circles -->
+            <div class="controls-right">
+              <div class="theme-row">
+                <button class="theme-btn active" onclick="setReaderTheme('light')" data-theme="light"></button>
+                <button class="theme-btn" onclick="setReaderTheme('sepia')" data-theme="sepia"></button>
+                <button class="theme-btn" onclick="setReaderTheme('dark')" data-theme="dark"></button>
+              </div>
+            </div>
+          </div>
+
+          <button class="sidebar-settings-btn" id="sidebar-settings-btn" onclick="toggleControls()">
+            <svg id="settings-icon-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+              width="34" height="34" viewBox="0 0 375 375" preserveAspectRatio="xMidYMid meet" version="1.0">
+              <defs>
+                <clipPath id="df57ba3ed6_sidebar">
+                  <path
+                    d="M 37.5 38.410156 L 336.75 38.410156 L 336.75 337.660156 L 37.5 337.660156 Z M 37.5 38.410156 "
+                    clip-rule="nonzero" />
+                </clipPath>
+                <clipPath id="a3fdbc7cf1_sidebar">
+                  <path d="M 37.5 37.5 L 111.75 37.5 L 111.75 111.75 L 37.5 111.75 Z M 37.5 37.5 "
+                    clip-rule="nonzero" />
+                </clipPath>
+                <clipPath id="f3a3a13122_sidebar">
+                  <path
+                    d="M 183.824219 156.023438 L 249 156.023438 L 249 221.273438 L 183.824219 221.273438 Z M 183.824219 156.023438 "
+                    clip-rule="nonzero" />
+                </clipPath>
+              </defs>
+              <g clip-path="url(#df57ba3ed6_sidebar)">
+                <path fill="currentColor"
+                  d="M 336.59375 187.960938 C 231.714844 212.632812 211.714844 232.632812 187.042969 337.511719 C 162.378906 232.625 142.378906 212.625 37.5 187.960938 C 142.378906 163.289062 162.378906 143.289062 187.050781 38.410156 C 211.714844 143.289062 231.714844 163.289062 336.59375 187.960938 Z M 336.59375 187.960938 "
+                  fill-opacity="1" fill-rule="nonzero" />
+              </g>
+              <g clip-path="url(#a3fdbc7cf1_sidebar)">
+                <path fill="currentColor"
+                  d="M 112.042969 74.773438 C 85.90625 80.921875 80.921875 85.90625 74.769531 112.046875 C 68.625 85.90625 63.640625 80.921875 37.5 74.773438 C 63.640625 68.625 68.625 63.640625 74.773438 37.5 C 80.921875 63.640625 85.90625 68.625 112.042969 74.773438 Z M 112.042969 74.773438 "
+                  fill-opacity="1" fill-rule="nonzero" />
+              </g>
+              <g clip-path="url(#f3a3a13122_sidebar)">
+                <path fill="currentColor"
+                  d="M 248.96875 188.597656 C 226.125 193.96875 221.769531 198.328125 216.394531 221.171875 C 211.023438 198.324219 206.667969 193.96875 183.824219 188.597656 C 206.667969 183.222656 211.023438 178.867188 216.394531 156.023438 C 221.769531 178.867188 226.125 183.222656 248.96875 188.597656 Z M 248.96875 188.597656 "
+                  fill-opacity="1" fill-rule="nonzero" />
+              </g>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Main reading area -->
@@ -1820,281 +1924,212 @@
         <div id="reader-content-area" style="display:none;"></div>
       </div>
 
-    </div>
-
-    <!-- Sidebar toggle (hamburger menu) — fixed bottom-left -->
-    <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round">
-        <line x1="3" y1="12" x2="21" y2="12" />
-        <line x1="3" y1="6" x2="21" y2="6" />
-        <line x1="3" y1="18" x2="21" y2="18" />
-      </svg>
-    </button>
-
-    <!-- Settings button — fixed bottom-right, same height as sidebar toggle -->
-    <div class="sidebar-settings-container" id="sidebar-settings-container">
-      <!-- Settings dialog (appears above button) -->
-      <div class="reader-controls-dialog" id="reader-controls-dialog">
-        <!-- Left column: font size + line spacing -->
-        <div class="controls-left">
-          <div class="control-group">
-            <span class="control-label">text size</span>
-            <div class="control-buttons">
-              <button class="control-btn" onclick="adjustReaderFontSize(10)" title="Increase">Aa+</button>
-              <button class="control-btn" onclick="adjustReaderFontSize(-10)" title="Decrease">Aa−</button>
-            </div>
-          </div>
-          <div class="control-group">
-            <span class="control-label">line spacing</span>
-            <div class="control-buttons">
-              <button class="control-btn" onclick="adjustLineHeight(0.1)" title="Increase">+</button>
-              <button class="control-btn" onclick="adjustLineHeight(-0.1)" title="Decrease">−</button>
-            </div>
-          </div>
-        </div>
-        <!-- Right column: theme circles -->
-        <div class="controls-right">
-          <div class="theme-row">
-            <button class="theme-btn active" onclick="setReaderTheme('light')" data-theme="light"></button>
-            <button class="theme-btn" onclick="setReaderTheme('sepia')" data-theme="sepia"></button>
-            <button class="theme-btn" onclick="setReaderTheme('dark')" data-theme="dark"></button>
-          </div>
-        </div>
-      </div>
-
-      <button class="sidebar-settings-btn" id="sidebar-settings-btn" onclick="toggleControls()">
-        <svg id="settings-icon-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-          width="34" height="34" viewBox="0 0 375 375" preserveAspectRatio="xMidYMid meet" version="1.0">
-          <defs>
-            <clipPath id="df57ba3ed6">
-              <path d="M 37.5 38.410156 L 336.75 38.410156 L 336.75 337.660156 L 37.5 337.660156 Z M 37.5 38.410156 "
-                clip-rule="nonzero" />
-            </clipPath>
-            <clipPath id="a3fdbc7cf1">
-              <path d="M 37.5 37.5 L 111.75 37.5 L 111.75 111.75 L 37.5 111.75 Z M 37.5 37.5 " clip-rule="nonzero" />
-            </clipPath>
-            <clipPath id="f3a3a13122">
-              <path
-                d="M 183.824219 156.023438 L 249 156.023438 L 249 221.273438 L 183.824219 221.273438 Z M 183.824219 156.023438 "
-                clip-rule="nonzero" />
-            </clipPath>
-          </defs>
-          <g clip-path="url(#df57ba3ed6)">
-            <path fill="currentColor"
-              d="M 336.59375 187.960938 C 231.714844 212.632812 211.714844 232.632812 187.042969 337.511719 C 162.378906 232.625 142.378906 212.625 37.5 187.960938 C 142.378906 163.289062 162.378906 143.289062 187.050781 38.410156 C 211.714844 143.289062 231.714844 163.289062 336.59375 187.960938 Z M 336.59375 187.960938 "
-              fill-opacity="1" fill-rule="nonzero" />
-          </g>
-          <g clip-path="url(#a3fdbc7cf1)">
-            <path fill="currentColor"
-              d="M 112.042969 74.773438 C 85.90625 80.921875 80.921875 85.90625 74.769531 112.046875 C 68.625 85.90625 63.640625 80.921875 37.5 74.773438 C 63.640625 68.625 68.625 63.640625 74.773438 37.5 C 80.921875 63.640625 85.90625 68.625 112.042969 74.773438 Z M 112.042969 74.773438 "
-              fill-opacity="1" fill-rule="nonzero" />
-          </g>
-          <g clip-path="url(#f3a3a13122)">
-            <path fill="currentColor"
-              d="M 248.96875 188.597656 C 226.125 193.96875 221.769531 198.328125 216.394531 221.171875 C 211.023438 198.324219 206.667969 193.96875 183.824219 188.597656 C 206.667969 183.222656 211.023438 178.867188 216.394531 156.023438 C 221.769531 178.867188 226.125 183.222656 248.96875 188.597656 Z M 248.96875 188.597656 "
-              fill-opacity="1" fill-rule="nonzero" />
-          </g>
+      <!-- Sidebar toggle (hamburger menu) — fixed bottom-left -->
+      <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="18" x2="21" y2="18" />
         </svg>
       </button>
+
     </div>
 
-  </div>
+    <!-- Toast -->
+    <div id="toast"></div>
 
-  <!-- Toast -->
-  <div id="toast"></div>
+    <script>
+      // ═══════════════════════════════════════════
+      // STATE
+      // ═══════════════════════════════════════════
+      // IMPORTANT: Replace this with your Google Apps Script web app URL
+      const PROXY_URL = 'https://script.google.com/macros/s/AKfycbxEz_tDrAIhpIIp-2gc32mD4-V4PF-dd_MaBSbvbTGjnyGyqTNUSIBv_OvN_k6P2VGn/exec';
 
-  <script>
-    // ═══════════════════════════════════════════
-    // STATE
-    // ═══════════════════════════════════════════
-    // IMPORTANT: Replace this with your Google Apps Script web app URL
-    const PROXY_URL = 'https://script.google.com/macros/s/AKfycbxEz_tDrAIhpIIp-2gc32mD4-V4PF-dd_MaBSbvbTGjnyGyqTNUSIBv_OvN_k6P2VGn/exec';
+      let library = [];       // array of fic metadata objects
+      let currentFic = null;  // currently open fic
+      let pdfDoc = null;
+      let currentPdfPage = 1;
+      let pdfScale = 1.5;
+      let fontScalePercent = 100;
+      let epubChapters = [];
+      let currentChapterIdx = 0;
 
-    let library = [];       // array of fic metadata objects
-    let currentFic = null;  // currently open fic
-    let pdfDoc = null;
-    let currentPdfPage = 1;
-    let pdfScale = 1.5;
-    let fontScalePercent = 100;
-    let epubChapters = [];
-    let currentChapterIdx = 0;
+      // PDF.js worker
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    // PDF.js worker
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      // ═══════════════════════════════════════════
+      // INIT — read URL params from bot deep link
+      // ═══════════════════════════════════════════
+      window.addEventListener('DOMContentLoaded', () => {
+        loadLibraryFromStorage();
 
-    // ═══════════════════════════════════════════
-    // INIT — read URL params from bot deep link
-    // ═══════════════════════════════════════════
-    window.addEventListener('DOMContentLoaded', () => {
-      loadLibraryFromStorage();
+        const params = new URLSearchParams(window.location.search);
+        const fileParam = params.get('file');
+        const extParam = params.get('ext') || 'pdf';
 
-      const params = new URLSearchParams(window.location.search);
-      const fileParam = params.get('file');
-      const extParam = params.get('ext') || 'pdf';
-
-      if (fileParam) {
-        // Came from bot button — decode and open immediately
-        try {
-          const telegramFileUrl = atob(fileParam);
-          // Route through our CORS proxy with mode=read for base64 encoding
-          const proxiedUrl = `${PROXY_URL}?file=${encodeURIComponent(telegramFileUrl)}&mode=read`;
-
-          const fic = {
-            id: Date.now(),
-            title: params.get('title') || 'Untitled',
-            author: params.get('author') || '',
-            fandom: params.get('fandom') || '',
-            tags: params.get('tags') || '',
-            warning: params.get('warning') || '',
-            words: params.get('words') || '',
-            category: params.get('category') || '',
-            summary: params.get('summary') || '',
-            ext: extParam,
-            fileUrl: proxiedUrl,
-            addedAt: new Date().toISOString()
-          };
-          addToLibrary(fic);
-          openReader(fic);
-        } catch (e) {
-          showToast('Could not open file from link.');
-          showPage('library');
-        }
-      } else {
-        showPage('home');
-      }
-    });
-
-    // ═══════════════════════════════════════════
-    // LIBRARY PERSISTENCE
-    // ═══════════════════════════════════════════
-    function loadLibraryFromStorage() {
-      try {
-        const raw = localStorage.getItem('oracle_library');
-        library = raw ? JSON.parse(raw) : [];
-      } catch (e) { library = []; }
-    }
-
-    function saveLibraryToStorage() {
-      try { localStorage.setItem('oracle_library', JSON.stringify(library)); } catch (e) { }
-    }
-
-    function addToLibrary(fic) {
-      if (!fic.title || fic.title === 'Untitled') {
-        fic.title = extractTitleFromUrl(fic.fileUrl);
-      }
-
-      // Don't duplicate by fileUrl
-      const exists = library.find(f => f.fileUrl === fic.fileUrl);
-      if (!exists) {
-        library.unshift(fic);
-        saveLibraryToStorage();
-      } else {
-        // Update title/author if it was Untitled or empty, and new data is better
-        let updated = false;
-        if ((!exists.title || exists.title === 'Untitled') && fic.title && fic.title !== 'Untitled') {
-          exists.title = fic.title;
-          updated = true;
-        }
-        if ((!exists.author || exists.author === 'N/A') && fic.author) {
-          exists.author = fic.author;
-          updated = true;
-        }
-        if (updated) {
-          saveLibraryToStorage();
-        }
-      }
-    }
-
-    function extractTitleFromUrl(url) {
-      try {
-        if (!url) return 'Untitled';
-        const urlObj = new URL(url);
-        const fileParam = urlObj.searchParams.get('file');
-
-        let filename = '';
         if (fileParam) {
-          // Proxy URL: Decode base64 telegram URL
-          const decoded = atob(fileParam);
-          filename = decoded.split('/').pop().split('?')[0];
+          // Came from bot button — decode and open immediately
+          try {
+            const telegramFileUrl = atob(fileParam);
+            // Route through our CORS proxy with mode=read for base64 encoding
+            const proxiedUrl = `${PROXY_URL}?file=${encodeURIComponent(telegramFileUrl)}&mode=read`;
+
+            const fic = {
+              id: Date.now(),
+              title: params.get('title') || 'Untitled',
+              author: params.get('author') || '',
+              fandom: params.get('fandom') || '',
+              tags: params.get('tags') || '',
+              warning: params.get('warning') || '',
+              words: params.get('words') || '',
+              category: params.get('category') || '',
+              summary: params.get('summary') || '',
+              ext: extParam,
+              fileUrl: proxiedUrl,
+              addedAt: new Date().toISOString()
+            };
+            addToLibrary(fic);
+            openReader(fic);
+          } catch (e) {
+            showToast('Could not open file from link.');
+            showPage('library');
+          }
         } else {
-          filename = urlObj.pathname.split('/').pop();
+          showPage('home');
+        }
+      });
+
+      // ═══════════════════════════════════════════
+      // LIBRARY PERSISTENCE
+      // ═══════════════════════════════════════════
+      function loadLibraryFromStorage() {
+        try {
+          const raw = localStorage.getItem('oracle_library');
+          library = raw ? JSON.parse(raw) : [];
+        } catch (e) { library = []; }
+      }
+
+      function saveLibraryToStorage() {
+        try { localStorage.setItem('oracle_library', JSON.stringify(library)); } catch (e) { }
+      }
+
+      function addToLibrary(fic) {
+        if (!fic.title || fic.title === 'Untitled') {
+          fic.title = extractTitleFromUrl(fic.fileUrl);
         }
 
-        if (!filename) return 'Untitled';
-
-        return decodeURIComponent(filename)
-          .replace(/\.[^/.]+$/, "") // remove extension
-          .replace(/[_-]/g, " ")    // underscores to spaces
-          .replace(/\s+/g, " ")     // collapse spaces
-          .trim() || 'Untitled';
-      } catch (e) {
-        return 'Untitled';
+        // Don't duplicate by fileUrl
+        const exists = library.find(f => f.fileUrl === fic.fileUrl);
+        if (!exists) {
+          library.unshift(fic);
+          saveLibraryToStorage();
+        } else {
+          // Update title/author if it was Untitled or empty, and new data is better
+          let updated = false;
+          if ((!exists.title || exists.title === 'Untitled') && fic.title && fic.title !== 'Untitled') {
+            exists.title = fic.title;
+            updated = true;
+          }
+          if ((!exists.author || exists.author === 'N/A') && fic.author) {
+            exists.author = fic.author;
+            updated = true;
+          }
+          if (updated) {
+            saveLibraryToStorage();
+          }
+        }
       }
-    }
 
-    // ═══════════════════════════════════════════
-    // NAVIGATION
-    // ═══════════════════════════════════════════
-    function showPage(name) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('page-' + name).classList.add('active');
-      const navBtn = document.getElementById('nav-' + name);
-      if (navBtn) navBtn.classList.add('active');
+      function extractTitleFromUrl(url) {
+        try {
+          if (!url) return 'Untitled';
+          const urlObj = new URL(url);
+          const fileParam = urlObj.searchParams.get('file');
 
-      if (name === 'library') renderLibrary();
-      if (name === 'search') { renderSearch(''); document.getElementById('main-search-input').focus(); }
-    }
+          let filename = '';
+          if (fileParam) {
+            // Proxy URL: Decode base64 telegram URL
+            const decoded = atob(fileParam);
+            filename = decoded.split('/').pop().split('?')[0];
+          } else {
+            filename = urlObj.pathname.split('/').pop();
+          }
 
-    function backToLibrary() { showPage('library'); }
+          if (!filename) return 'Untitled';
 
-    // ═══════════════════════════════════════════
-    // LIBRARY RENDER
-    // ═══════════════════════════════════════════
-    function renderLibrary() {
-      const grid = document.getElementById('library-grid');
-      const extFilter = document.getElementById('filter-ext').value;
-      const sortFilter = document.getElementById('filter-sort').value;
+          return decodeURIComponent(filename)
+            .replace(/\.[^/.]+$/, "") // remove extension
+            .replace(/[_-]/g, " ")    // underscores to spaces
+            .replace(/\s+/g, " ")     // collapse spaces
+            .trim() || 'Untitled';
+        } catch (e) {
+          return 'Untitled';
+        }
+      }
 
-      let fics = [...library];
-      if (extFilter) fics = fics.filter(f => f.ext === extFilter);
+      // ═══════════════════════════════════════════
+      // NAVIGATION
+      // ═══════════════════════════════════════════
+      function showPage(name) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('page-' + name).classList.add('active');
+        const navBtn = document.getElementById('nav-' + name);
+        if (navBtn) navBtn.classList.add('active');
 
-      if (sortFilter === 'oldest') fics.sort((a, b) => new Date(a.addedAt) - new Date(b.addedAt));
-      else if (sortFilter === 'title') fics.sort((a, b) => a.title.localeCompare(b.title));
-      // newest is default (already newest-first from unshift)
+        if (name === 'library') renderLibrary();
+        if (name === 'search') { renderSearch(''); document.getElementById('main-search-input').focus(); }
+      }
 
-      if (fics.length === 0) {
-        grid.innerHTML = `
+      function backToLibrary() { showPage('library'); }
+
+      // ═══════════════════════════════════════════
+      // LIBRARY RENDER
+      // ═══════════════════════════════════════════
+      function renderLibrary() {
+        const grid = document.getElementById('library-grid');
+        const extFilter = document.getElementById('filter-ext').value;
+        const sortFilter = document.getElementById('filter-sort').value;
+
+        let fics = [...library];
+        if (extFilter) fics = fics.filter(f => f.ext === extFilter);
+
+        if (sortFilter === 'oldest') fics.sort((a, b) => new Date(a.addedAt) - new Date(b.addedAt));
+        else if (sortFilter === 'title') fics.sort((a, b) => a.title.localeCompare(b.title));
+        // newest is default (already newest-first from unshift)
+
+        if (fics.length === 0) {
+          grid.innerHTML = `
       <div class="empty-state" style="grid-column:1/-1;">
         <div class="empty-state-sigil">📚</div>
         <div class="empty-state-title">The shelves are bare.</div>
         <div class="empty-state-desc">Send a PDF or EPUB to the Oracle bot, then tap "Read Now" to open it here. It will appear in your library automatically.</div>
       </div>`;
-        return;
+          return;
+        }
+
+        grid.innerHTML = fics.map(fic => ficCard(fic)).join('');
       }
 
-      grid.innerHTML = fics.map(fic => ficCard(fic)).join('');
-    }
+      function ficCard(fic) {
+        const icon = fic.ext === 'epub'
+          ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>'
+          : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>';
+        const tags = fic.tags && fic.tags !== 'N/A'
+          ? fic.tags.split(',').slice(0, 3).map(t => `<span class="fic-chip">${t.trim()}</span>`).join('')
+          : '';
+        const summary = fic.summary && fic.summary !== 'N/A'
+          ? `<div class="fic-card-summary">${escHtml(fic.summary)}</div>` : '';
+        const fandom = fic.fandom && fic.fandom !== 'N/A'
+          ? `<div class="fic-card-fandom">${escHtml(fic.fandom)}</div>` : '';
+        const words = fic.words && fic.words !== 'N/A'
+          ? `<span class="fic-chip">${escHtml(fic.words)} words</span>` : '';
+        const category = fic.category && fic.category !== 'N/A'
+          ? `<span class="fic-chip">${escHtml(fic.category)}</span>` : '';
 
-    function ficCard(fic) {
-      const icon = fic.ext === 'epub'
-        ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>'
-        : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>';
-      const tags = fic.tags && fic.tags !== 'N/A'
-        ? fic.tags.split(',').slice(0, 3).map(t => `<span class="fic-chip">${t.trim()}</span>`).join('')
-        : '';
-      const summary = fic.summary && fic.summary !== 'N/A'
-        ? `<div class="fic-card-summary">${escHtml(fic.summary)}</div>` : '';
-      const fandom = fic.fandom && fic.fandom !== 'N/A'
-        ? `<div class="fic-card-fandom">${escHtml(fic.fandom)}</div>` : '';
-      const words = fic.words && fic.words !== 'N/A'
-        ? `<span class="fic-chip">${escHtml(fic.words)} words</span>` : '';
-      const category = fic.category && fic.category !== 'N/A'
-        ? `<span class="fic-chip">${escHtml(fic.category)}</span>` : '';
-
-      return `
+        return `
     <div class="fic-card" onclick="openReader(library.find(f=>f.id===${fic.id}))">
       <div class="fic-card-ext"><span class="fic-card-ext-dot"></span>${icon} ${fic.ext.toUpperCase()}</div>
       <div class="fic-card-title">${escHtml(fic.title)}</div>
@@ -2107,155 +2142,155 @@
         <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();removeFromLibrary(${fic.id})">Remove</button>
       </div>
     </div>`;
-    }
-
-    function removeFromLibrary(id) {
-      library = library.filter(f => f.id !== id);
-      saveLibraryToStorage();
-      renderLibrary();
-      showToast('Removed from library.');
-    }
-
-    // ═══════════════════════════════════════════
-    // SEARCH
-    // ═══════════════════════════════════════════
-    function handleHeaderSearch(val) { }
-
-    function goToSearch() {
-      const val = document.getElementById('header-search-input').value;
-      showPage('search');
-      document.getElementById('main-search-input').value = val;
-      runSearch(val);
-    }
-
-    function renderSearch(query) { runSearch(query || ''); }
-
-    function runSearch(query) {
-      const q = (query || '').toLowerCase().trim();
-      const extFilter = document.getElementById('search-filter-ext').value;
-      const fieldFilter = document.getElementById('search-filter-field').value;
-      const countEl = document.getElementById('search-results-count');
-      const gridEl = document.getElementById('search-results-grid');
-
-      let results = [...library];
-      if (extFilter) results = results.filter(f => f.ext === extFilter);
-
-      if (q) {
-        results = results.filter(fic => {
-          if (fieldFilter === 'title') return (fic.title || '').toLowerCase().includes(q);
-          if (fieldFilter === 'author') return (fic.author || '').toLowerCase().includes(q);
-          if (fieldFilter === 'fandom') return (fic.fandom || '').toLowerCase().includes(q);
-          if (fieldFilter === 'tags') return (fic.tags || '').toLowerCase().includes(q);
-          // 'all' fields
-          return ['title', 'author', 'fandom', 'tags', 'summary', 'characters', 'relationships']
-            .some(k => (fic[k] || '').toLowerCase().includes(q));
-        });
       }
 
-      countEl.innerHTML = q
-        ? `Found <strong>${results.length}</strong> tome${results.length !== 1 ? 's' : ''} matching "<em>${escHtml(q)}</em>"`
-        : `<strong>${results.length}</strong> tome${results.length !== 1 ? 's' : ''} in your archive`;
+      function removeFromLibrary(id) {
+        library = library.filter(f => f.id !== id);
+        saveLibraryToStorage();
+        renderLibrary();
+        showToast('Removed from library.');
+      }
 
-      if (results.length === 0) {
-        gridEl.innerHTML = `
+      // ═══════════════════════════════════════════
+      // SEARCH
+      // ═══════════════════════════════════════════
+      function handleHeaderSearch(val) { }
+
+      function goToSearch() {
+        const val = document.getElementById('header-search-input').value;
+        showPage('search');
+        document.getElementById('main-search-input').value = val;
+        runSearch(val);
+      }
+
+      function renderSearch(query) { runSearch(query || ''); }
+
+      function runSearch(query) {
+        const q = (query || '').toLowerCase().trim();
+        const extFilter = document.getElementById('search-filter-ext').value;
+        const fieldFilter = document.getElementById('search-filter-field').value;
+        const countEl = document.getElementById('search-results-count');
+        const gridEl = document.getElementById('search-results-grid');
+
+        let results = [...library];
+        if (extFilter) results = results.filter(f => f.ext === extFilter);
+
+        if (q) {
+          results = results.filter(fic => {
+            if (fieldFilter === 'title') return (fic.title || '').toLowerCase().includes(q);
+            if (fieldFilter === 'author') return (fic.author || '').toLowerCase().includes(q);
+            if (fieldFilter === 'fandom') return (fic.fandom || '').toLowerCase().includes(q);
+            if (fieldFilter === 'tags') return (fic.tags || '').toLowerCase().includes(q);
+            // 'all' fields
+            return ['title', 'author', 'fandom', 'tags', 'summary', 'characters', 'relationships']
+              .some(k => (fic[k] || '').toLowerCase().includes(q));
+          });
+        }
+
+        countEl.innerHTML = q
+          ? `Found <strong>${results.length}</strong> tome${results.length !== 1 ? 's' : ''} matching "<em>${escHtml(q)}</em>"`
+          : `<strong>${results.length}</strong> tome${results.length !== 1 ? 's' : ''} in your archive`;
+
+        if (results.length === 0) {
+          gridEl.innerHTML = `
       <div class="empty-state" style="grid-column:1/-1;">
         <div class="empty-state-sigil">🔍</div>
         <div class="empty-state-title">No tomes matched your query.</div>
         <div class="empty-state-desc">Try different keywords, or check another field filter.</div>
       </div>`;
-        return;
+          return;
+        }
+
+        gridEl.innerHTML = results.map(fic => ficCard(fic)).join('');
       }
 
-      gridEl.innerHTML = results.map(fic => ficCard(fic)).join('');
-    }
+      // ═══════════════════════════════════════════
+      // PROXY HELPER
+      // ═══════════════════════════════════════════
+      /**
+       * Fetches a file through the Google Apps Script proxy.
+       * The proxy returns base64-encoded binary data as plain text.
+       * This function decodes it back to an ArrayBuffer.
+       */
+      async function fetchProxiedFile(url) {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Proxy fetch failed: ${response.status}`);
+        }
 
-    // ═══════════════════════════════════════════
-    // PROXY HELPER
-    // ═══════════════════════════════════════════
-    /**
-     * Fetches a file through the Google Apps Script proxy.
-     * The proxy returns base64-encoded binary data as plain text.
-     * This function decodes it back to an ArrayBuffer.
-     */
-    async function fetchProxiedFile(url) {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Proxy fetch failed: ${response.status}`);
+        const text = await response.text();
+
+        // Check if it's an error JSON response
+        try {
+          const json = JSON.parse(text);
+          if (json.error) throw new Error(json.error);
+        } catch (e) {
+          // Not JSON, continue with base64 decode
+        }
+
+        // Decode base64 to binary
+        const binaryString = atob(text);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+
+        return bytes.buffer;
       }
 
-      const text = await response.text();
+      // ═══════════════════════════════════════════
+      // READER — OPEN
+      // ═══════════════════════════════════════════
+      function openReader(fic) {
+        if (!fic) return;
 
-      // Check if it's an error JSON response
-      try {
-        const json = JSON.parse(text);
-        if (json.error) throw new Error(json.error);
-      } catch (e) {
-        // Not JSON, continue with base64 decode
+        currentFic = fic;
+        showPage('reader');
+
+        // Ensure sidebar toggle is visible
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const settingsContainer = document.querySelector('.sidebar-settings-container');
+        if (sidebarToggle) sidebarToggle.classList.remove('hidden');
+        if (settingsContainer) settingsContainer.classList.remove('hidden');
+
+        // Title: prefer fic.title, fallback to extracting from the original URL stored in fic
+        let displayTitle = (fic.title && fic.title !== 'Untitled') ? fic.title : extractTitleFromUrl(fic.fileUrl);
+
+        // Update sidebar metadata
+        document.getElementById('sidebar-title').innerText = displayTitle;
+        document.getElementById('sidebar-author').innerText = fic.author && fic.author !== 'N/A' ? 'by ' + fic.author : '';
+        document.getElementById('sidebar-summary').innerText = fic.summary && fic.summary !== 'N/A' ? fic.summary : '';
+
+        // Tags
+        const tagsEl = document.getElementById('sidebar-tags');
+        const tagList = [];
+        if (fic.fandom && fic.fandom !== 'N/A') tagList.push(fic.fandom.split(',')[0].trim());
+        if (fic.category && fic.category !== 'N/A') tagList.push(fic.category);
+        if (fic.warning && fic.warning !== 'N/A') tagList.push(fic.warning.split(',')[0].trim());
+        tagsEl.innerHTML = tagList.map(t => `<span class="sidebar-tag">${escHtml(t)}</span>`).join('');
+
+        // Show loading
+        document.getElementById('reader-loading').style.display = 'flex';
+        document.getElementById('reader-content-area').style.display = 'none';
+        document.getElementById('toc-list').innerHTML = '';
+
+        if (fic.ext === 'pdf') {
+          loadPdf(fic.fileUrl);
+        } else {
+          loadEpub(fic.fileUrl);
+        }
       }
 
-      // Decode base64 to binary
-      const binaryString = atob(text);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
+      // ═══════════════════════════════════════════
+      // PDF READER
+      // ═══════════════════════════════════════════
+      async function loadPdf(url) {
+        try {
+          pdfDoc = null;
+          currentPdfPage = 1;
+          const contentArea = document.getElementById('reader-content-area');
 
-      return bytes.buffer;
-    }
-
-    // ═══════════════════════════════════════════
-    // READER — OPEN
-    // ═══════════════════════════════════════════
-    function openReader(fic) {
-      if (!fic) return;
-
-      currentFic = fic;
-      showPage('reader');
-
-      // Ensure sidebar toggle is visible
-      const sidebarToggle = document.getElementById('sidebar-toggle');
-      const settingsContainer = document.querySelector('.sidebar-settings-container');
-      if (sidebarToggle) sidebarToggle.classList.remove('hidden');
-      if (settingsContainer) settingsContainer.classList.remove('hidden');
-
-      // Title: prefer fic.title, fallback to extracting from the original URL stored in fic
-      let displayTitle = (fic.title && fic.title !== 'Untitled') ? fic.title : extractTitleFromUrl(fic.fileUrl);
-
-      // Update sidebar metadata
-      document.getElementById('sidebar-title').innerText = displayTitle;
-      document.getElementById('sidebar-author').innerText = fic.author && fic.author !== 'N/A' ? 'by ' + fic.author : '';
-      document.getElementById('sidebar-summary').innerText = fic.summary && fic.summary !== 'N/A' ? fic.summary : '';
-
-      // Tags
-      const tagsEl = document.getElementById('sidebar-tags');
-      const tagList = [];
-      if (fic.fandom && fic.fandom !== 'N/A') tagList.push(fic.fandom.split(',')[0].trim());
-      if (fic.category && fic.category !== 'N/A') tagList.push(fic.category);
-      if (fic.warning && fic.warning !== 'N/A') tagList.push(fic.warning.split(',')[0].trim());
-      tagsEl.innerHTML = tagList.map(t => `<span class="sidebar-tag">${escHtml(t)}</span>`).join('');
-
-      // Show loading
-      document.getElementById('reader-loading').style.display = 'flex';
-      document.getElementById('reader-content-area').style.display = 'none';
-      document.getElementById('toc-list').innerHTML = '';
-
-      if (fic.ext === 'pdf') {
-        loadPdf(fic.fileUrl);
-      } else {
-        loadEpub(fic.fileUrl);
-      }
-    }
-
-    // ═══════════════════════════════════════════
-    // PDF READER
-    // ═══════════════════════════════════════════
-    async function loadPdf(url) {
-      try {
-        pdfDoc = null;
-        currentPdfPage = 1;
-        const contentArea = document.getElementById('reader-content-area');
-
-        contentArea.innerHTML = `
+          contentArea.innerHTML = `
       <div id="pdf-canvas-wrapper"></div>
       <div class="pdf-page-nav">
         <button class="pdf-nav-btn" id="pdf-prev" onclick="changePdfPage(-1)">
@@ -2267,462 +2302,463 @@
 </button>
       </div>`;
 
-        // Fetch through proxy and get ArrayBuffer
-        const arrayBuffer = await fetchProxiedFile(url);
-        pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+          // Fetch through proxy and get ArrayBuffer
+          const arrayBuffer = await fetchProxiedFile(url);
+          pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 
-        // Build TOC from PDF outline if available
-        const outline = await pdfDoc.getOutline();
-        buildPdfToc(outline, pdfDoc.numPages);
+          // Build TOC from PDF outline if available
+          const outline = await pdfDoc.getOutline();
+          buildPdfToc(outline, pdfDoc.numPages);
 
-        document.getElementById('reader-loading').style.display = 'none';
-        contentArea.style.display = 'block';
+          document.getElementById('reader-loading').style.display = 'none';
+          contentArea.style.display = 'block';
 
-        renderPdfPage(1);
-      } catch (e) {
-        showReaderError('Could not load PDF: ' + e.message);
-      }
-    }
-
-    async function renderPdfPage(pageNum) {
-      if (!pdfDoc) return;
-      currentPdfPage = pageNum;
-
-      const page = await pdfDoc.getPage(pageNum);
-      const wrapper = document.getElementById('pdf-canvas-wrapper');
-
-      // Calculate scale to fit the container width
-      const containerW = document.getElementById('reader-main').clientWidth - 64;
-      const viewport0 = page.getViewport({ scale: 1 });
-      const baseScale = Math.min(containerW / viewport0.width, 2.0);
-      const scale = baseScale * (fontScalePercent / 100);
-
-      const viewport = page.getViewport({ scale });
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-
-      wrapper.innerHTML = '';
-      wrapper.appendChild(canvas);
-
-      await page.render({ canvasContext: ctx, viewport }).promise;
-
-      document.getElementById('pdf-page-info').textContent = `${pageNum} / ${pdfDoc.numPages}`;
-      document.getElementById('pdf-prev').disabled = pageNum <= 1;
-      document.getElementById('pdf-next').disabled = pageNum >= pdfDoc.numPages;
-
-      // Scroll to top
-      document.getElementById('reader-main').scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function changePdfPage(delta) {
-      if (!pdfDoc) return;
-      const next = currentPdfPage + delta;
-      if (next < 1 || next > pdfDoc.numPages) return;
-      renderPdfPage(next);
-    }
-
-    function buildPdfToc(outline, totalPages) {
-      const tocEl = document.getElementById('toc-list');
-      if (!outline || outline.length === 0) {
-        // No outline — generate page entries
-        const items = [];
-        for (let i = 1; i <= Math.min(totalPages, 30); i++) {
-          items.push(`<button class="toc-item" onclick="renderPdfPage(${i});setActiveToc(this)">Page ${i}</button>`);
+          renderPdfPage(1);
+        } catch (e) {
+          showReaderError('Could not load PDF: ' + e.message);
         }
-        if (totalPages > 30) items.push(`<div style="padding:0.4rem 1.5rem;font-size:0.75rem;color:var(--ash);font-style:italic;">…and ${totalPages - 30} more pages</div>`);
-        tocEl.innerHTML = items.join('');
-        return;
       }
-      tocEl.innerHTML = outline.map((item, i) =>
-        `<button class="toc-item" onclick="goToPdfOutlineItem(${i});setActiveToc(this)">${escHtml(item.title || 'Section ' + (i + 1))}</button>`
-      ).join('');
-      window._pdfOutline = outline;
-    }
 
-    async function goToPdfOutlineItem(idx) {
-      if (!pdfDoc || !window._pdfOutline) return;
-      try {
-        const item = window._pdfOutline[idx];
-        if (item && item.dest) {
-          const dest = typeof item.dest === 'string'
-            ? await pdfDoc.getDestination(item.dest)
-            : item.dest;
-          if (dest) {
-            const ref = dest[0];
-            const pageIdx = await pdfDoc.getPageIndex(ref);
-            renderPdfPage(pageIdx + 1);
+      async function renderPdfPage(pageNum) {
+        if (!pdfDoc) return;
+        currentPdfPage = pageNum;
+
+        const page = await pdfDoc.getPage(pageNum);
+        const wrapper = document.getElementById('pdf-canvas-wrapper');
+
+        // Calculate scale to fit the container width
+        const containerW = document.getElementById('reader-main').clientWidth - 64;
+        const viewport0 = page.getViewport({ scale: 1 });
+        const baseScale = Math.min(containerW / viewport0.width, 2.0);
+        const scale = baseScale * (fontScalePercent / 100);
+
+        const viewport = page.getViewport({ scale });
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        wrapper.innerHTML = '';
+        wrapper.appendChild(canvas);
+
+        await page.render({ canvasContext: ctx, viewport }).promise;
+
+        document.getElementById('pdf-page-info').textContent = `${pageNum} / ${pdfDoc.numPages}`;
+        document.getElementById('pdf-prev').disabled = pageNum <= 1;
+        document.getElementById('pdf-next').disabled = pageNum >= pdfDoc.numPages;
+
+        // Scroll to top
+        document.getElementById('reader-main').scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function changePdfPage(delta) {
+        if (!pdfDoc) return;
+        const next = currentPdfPage + delta;
+        if (next < 1 || next > pdfDoc.numPages) return;
+        renderPdfPage(next);
+      }
+
+      function buildPdfToc(outline, totalPages) {
+        const tocEl = document.getElementById('toc-list');
+        if (!outline || outline.length === 0) {
+          // No outline — generate page entries
+          const items = [];
+          for (let i = 1; i <= Math.min(totalPages, 30); i++) {
+            items.push(`<button class="toc-item" onclick="renderPdfPage(${i});setActiveToc(this)">Page ${i}</button>`);
           }
+          if (totalPages > 30) items.push(`<div style="padding:0.4rem 1.5rem;font-size:0.75rem;color:var(--ash);font-style:italic;">…and ${totalPages - 30} more pages</div>`);
+          tocEl.innerHTML = items.join('');
+          return;
         }
-      } catch (e) { }
-    }
+        tocEl.innerHTML = outline.map((item, i) =>
+          `<button class="toc-item" onclick="goToPdfOutlineItem(${i});setActiveToc(this)">${escHtml(item.title || 'Section ' + (i + 1))}</button>`
+        ).join('');
+        window._pdfOutline = outline;
+      }
 
-    // Font size for PDF (re-renders page)
-    function setFontScale(val) {
-      fontScalePercent = parseInt(val);
-      document.getElementById('font-size-display').textContent = fontScalePercent + '%';
-      if (pdfDoc) renderPdfPage(currentPdfPage);
-    }
-
-    function adjustFontSize(delta) {
-      const slider = document.getElementById('font-size-slider');
-      const newVal = Math.max(60, Math.min(160, fontScalePercent + delta * 10));
-      slider.value = newVal;
-      setFontScale(newVal);
-    }
-
-    // ═══════════════════════════════════════════
-    // EPUB READER
-    // ═══════════════════════════════════════════
-    async function loadEpub(url) {
-      try {
-        // Fetch through proxy and get ArrayBuffer
-        const arrayBuf = await fetchProxiedFile(url);
-        const zip = await JSZip.loadAsync(arrayBuf);
-
-        // Parse OPF to get reading order
-        epubChapters = [];
-        const opfEntry = Object.values(zip.files).find(f =>
-          f.name.endsWith('.opf') || f.name.includes('content.opf') || f.name.includes('package.opf')
-        );
-
-        let spineFiles = [];
-
-        if (opfEntry) {
-          const opfText = await opfEntry.async('text');
-          const parser = new DOMParser();
-          const opfDoc = parser.parseFromString(opfText, 'application/xml');
-          const opfBase = opfEntry.name.substring(0, opfEntry.name.lastIndexOf('/') + 1);
-
-          // Build id→href manifest
-          const manifest = {};
-          opfDoc.querySelectorAll('manifest item').forEach(item => {
-            manifest[item.getAttribute('id')] = opfBase + item.getAttribute('href');
-          });
-
-          // Get spine order
-          opfDoc.querySelectorAll('spine itemref').forEach(ref => {
-            const href = manifest[ref.getAttribute('idref')];
-            if (href) spineFiles.push(href);
-          });
-        }
-
-        if (spineFiles.length === 0) {
-          // Fallback: all xhtml/html files sorted by name
-          spineFiles = Object.keys(zip.files)
-            .filter(n => (n.endsWith('.xhtml') || n.endsWith('.html')) && !n.includes('toc') && !n.includes('nav'))
-            .sort();
-        }
-
-        // Extract chapters
-        for (const filePath of spineFiles) {
-          const normalised = filePath.replace(/^\//, '');
-          const entry = zip.files[normalised] || zip.files[filePath];
-          if (!entry) continue;
-
-          const html = await entry.async('text');
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(html, 'text/html');
-
-          // Inline images as base64
-          for (const img of doc.querySelectorAll('img')) {
-            const src = img.getAttribute('src');
-            if (src && !src.startsWith('data:') && !src.startsWith('http')) {
-              const imgBase = normalised.substring(0, normalised.lastIndexOf('/') + 1);
-              const imgPath = (imgBase + src).replace(/[^/]+\/\.\.\//g, '');
-              const imgEntry = zip.files[imgPath];
-              if (imgEntry) {
-                const b64 = await imgEntry.async('base64');
-                const mime = src.endsWith('.png') ? 'image/png' : 'image/jpeg';
-                img.setAttribute('src', `data:${mime};base64,${b64}`);
-              }
+      async function goToPdfOutlineItem(idx) {
+        if (!pdfDoc || !window._pdfOutline) return;
+        try {
+          const item = window._pdfOutline[idx];
+          if (item && item.dest) {
+            const dest = typeof item.dest === 'string'
+              ? await pdfDoc.getDestination(item.dest)
+              : item.dest;
+            if (dest) {
+              const ref = dest[0];
+              const pageIdx = await pdfDoc.getPageIndex(ref);
+              renderPdfPage(pageIdx + 1);
             }
           }
-
-          // Get title from heading or title tag
-          const h1 = doc.querySelector('h1, h2');
-          const titleEl = doc.querySelector('title');
-          const chapterTitle = h1
-            ? h1.textContent.trim()
-            : (titleEl ? titleEl.textContent.trim() : 'Chapter ' + (epubChapters.length + 1));
-
-          // Clean body content — remove nav/toc elements
-          doc.querySelectorAll('nav, .toc, #toc, [class*="toc"]').forEach(el => el.remove());
-
-          epubChapters.push({
-            title: chapterTitle,
-            content: doc.body ? doc.body.innerHTML : ''
-          });
-        }
-
-        if (epubChapters.length === 0) throw new Error('No readable chapters found.');
-
-        // Build TOC
-        const tocEl = document.getElementById('toc-list');
-        tocEl.innerHTML = epubChapters.map((ch, i) =>
-          `<button class="toc-item${i === 0 ? ' active' : ''}" id="toc-${i}" onclick="goToChapter(${i})">${escHtml(ch.title)}</button>`
-        ).join('');
-
-        document.getElementById('reader-loading').style.display = 'none';
-        document.getElementById('reader-content-area').style.display = 'block';
-
-        currentChapterIdx = 0;
-        renderChapter(0);
-
-      } catch (e) {
-        showReaderError('Could not load EPUB: ' + e.message);
+        } catch (e) { }
       }
-    }
 
-    function renderChapter(idx) {
-      if (idx < 0 || idx >= epubChapters.length) return;
-      currentChapterIdx = idx;
+      // Font size for PDF (re-renders page)
+      function setFontScale(val) {
+        fontScalePercent = parseInt(val);
+        document.getElementById('font-size-display').textContent = fontScalePercent + '%';
+        if (pdfDoc) renderPdfPage(currentPdfPage);
+      }
 
-      const ch = epubChapters[idx];
-      const contentArea = document.getElementById('reader-content-area');
+      function adjustFontSize(delta) {
+        const slider = document.getElementById('font-size-slider');
+        const newVal = Math.max(60, Math.min(160, fontScalePercent + delta * 10));
+        slider.value = newVal;
+        setFontScale(newVal);
+      }
 
-      const prevBtn = idx > 0
-        ? `<button class="btn btn-ghost btn-sm" onclick="goToChapter(${idx - 1})"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> ${escHtml(epubChapters[idx - 1].title)}</button>`
-        : '<span></span>';
+      // ═══════════════════════════════════════════
+      // EPUB READER
+      // ═══════════════════════════════════════════
+      async function loadEpub(url) {
+        try {
+          // Fetch through proxy and get ArrayBuffer
+          const arrayBuf = await fetchProxiedFile(url);
+          const zip = await JSZip.loadAsync(arrayBuf);
 
-      const nextBtn = idx < epubChapters.length - 1
-        ? `<button class="btn btn-primary btn-sm" onclick="goToChapter(${idx + 1})">` +
-        `${escHtml(epubChapters[idx + 1].title)} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>`
-        : '<span></span>';
+          // Parse OPF to get reading order
+          epubChapters = [];
+          const opfEntry = Object.values(zip.files).find(f =>
+            f.name.endsWith('.opf') || f.name.includes('content.opf') || f.name.includes('package.opf')
+          );
 
-      contentArea.innerHTML = `
+          let spineFiles = [];
+
+          if (opfEntry) {
+            const opfText = await opfEntry.async('text');
+            const parser = new DOMParser();
+            const opfDoc = parser.parseFromString(opfText, 'application/xml');
+            const opfBase = opfEntry.name.substring(0, opfEntry.name.lastIndexOf('/') + 1);
+
+            // Build id→href manifest
+            const manifest = {};
+            opfDoc.querySelectorAll('manifest item').forEach(item => {
+              manifest[item.getAttribute('id')] = opfBase + item.getAttribute('href');
+            });
+
+            // Get spine order
+            opfDoc.querySelectorAll('spine itemref').forEach(ref => {
+              const href = manifest[ref.getAttribute('idref')];
+              if (href) spineFiles.push(href);
+            });
+          }
+
+          if (spineFiles.length === 0) {
+            // Fallback: all xhtml/html files sorted by name
+            spineFiles = Object.keys(zip.files)
+              .filter(n => (n.endsWith('.xhtml') || n.endsWith('.html')) && !n.includes('toc') && !n.includes('nav'))
+              .sort();
+          }
+
+          // Extract chapters
+          for (const filePath of spineFiles) {
+            const normalised = filePath.replace(/^\//, '');
+            const entry = zip.files[normalised] || zip.files[filePath];
+            if (!entry) continue;
+
+            const html = await entry.async('text');
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            // Inline images as base64
+            for (const img of doc.querySelectorAll('img')) {
+              const src = img.getAttribute('src');
+              if (src && !src.startsWith('data:') && !src.startsWith('http')) {
+                const imgBase = normalised.substring(0, normalised.lastIndexOf('/') + 1);
+                const imgPath = (imgBase + src).replace(/[^/]+\/\.\.\//g, '');
+                const imgEntry = zip.files[imgPath];
+                if (imgEntry) {
+                  const b64 = await imgEntry.async('base64');
+                  const mime = src.endsWith('.png') ? 'image/png' : 'image/jpeg';
+                  img.setAttribute('src', `data:${mime};base64,${b64}`);
+                }
+              }
+            }
+
+            // Get title from heading or title tag
+            const h1 = doc.querySelector('h1, h2');
+            const titleEl = doc.querySelector('title');
+            const chapterTitle = h1
+              ? h1.textContent.trim()
+              : (titleEl ? titleEl.textContent.trim() : 'Chapter ' + (epubChapters.length + 1));
+
+            // Clean body content — remove nav/toc elements
+            doc.querySelectorAll('nav, .toc, #toc, [class*="toc"]').forEach(el => el.remove());
+
+            epubChapters.push({
+              title: chapterTitle,
+              content: doc.body ? doc.body.innerHTML : ''
+            });
+          }
+
+          if (epubChapters.length === 0) throw new Error('No readable chapters found.');
+
+          // Build TOC
+          const tocEl = document.getElementById('toc-list');
+          tocEl.innerHTML = epubChapters.map((ch, i) =>
+            `<button class="toc-item${i === 0 ? ' active' : ''}" id="toc-${i}" onclick="goToChapter(${i})">${escHtml(ch.title)}</button>`
+          ).join('');
+
+          document.getElementById('reader-loading').style.display = 'none';
+          document.getElementById('reader-content-area').style.display = 'block';
+
+          currentChapterIdx = 0;
+          renderChapter(0);
+
+        } catch (e) {
+          showReaderError('Could not load EPUB: ' + e.message);
+        }
+      }
+
+      function renderChapter(idx) {
+        if (idx < 0 || idx >= epubChapters.length) return;
+        currentChapterIdx = idx;
+
+        const ch = epubChapters[idx];
+        const contentArea = document.getElementById('reader-content-area');
+
+        const prevBtn = idx > 0
+          ? `<button class="btn btn-ghost btn-sm" onclick="goToChapter(${idx - 1})"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> ${escHtml(epubChapters[idx - 1].title)}</button>`
+          : '<span></span>';
+
+        const nextBtn = idx < epubChapters.length - 1
+          ? `<button class="btn btn-primary btn-sm" onclick="goToChapter(${idx + 1})">` +
+          `${escHtml(epubChapters[idx + 1].title)} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>`
+          : '<span></span>';
+
+        contentArea.innerHTML = `
     <div class="reader-content">
       <div class="epub-chapter">${sanitiseHtml(ch.content)}</div>
       <div class="chapter-nav">${prevBtn}${nextBtn}</div>
     </div>`;
 
-      // Update TOC active state
-      document.querySelectorAll('.toc-item').forEach((el, i) => {
-        el.classList.toggle('active', i === idx);
-      });
+        // Update TOC active state
+        document.querySelectorAll('.toc-item').forEach((el, i) => {
+          el.classList.toggle('active', i === idx);
+        });
 
-      document.getElementById('reader-main').scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function goToChapter(idx) { renderChapter(idx); }
-
-    // ═══════════════════════════════════════════
-    // UTILITIES
-    // ═══════════════════════════════════════════
-    function setActiveToc(el) {
-      document.querySelectorAll('.toc-item').forEach(b => b.classList.remove('active'));
-      el.classList.add('active');
-    }
-
-    function toggleSidebar() {
-      const sidebar = document.getElementById('reader-sidebar');
-      const toggleBtn = document.getElementById('sidebar-toggle');
-      const settingsContainer = document.querySelector('.sidebar-settings-container');
-
-      sidebar.classList.toggle('open');
-      toggleBtn.classList.toggle('open');
-      settingsContainer?.classList.toggle('open');
-
-      if (sidebar.classList.contains('open')) {
-        // Arrow Right
-        toggleBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
-      } else {
-        // Hamburger
-        toggleBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+        document.getElementById('reader-main').scrollTo({ top: 0, behavior: 'smooth' });
       }
-    }
 
-    function showReaderError(msg) {
-      document.getElementById('reader-loading').style.display = 'none';
-      const area = document.getElementById('reader-content-area');
-      area.style.display = 'block';
-      area.innerHTML = `
+      function goToChapter(idx) { renderChapter(idx); }
+
+      // ═══════════════════════════════════════════
+      // UTILITIES
+      // ═══════════════════════════════════════════
+      function setActiveToc(el) {
+        document.querySelectorAll('.toc-item').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+      }
+
+      function toggleSidebar() {
+        const sidebar = document.getElementById('reader-sidebar');
+        const toggleBtn = document.getElementById('sidebar-toggle');
+        const settingsContainer = document.querySelector('.sidebar-settings-container');
+
+        sidebar.classList.toggle('open');
+        toggleBtn.classList.toggle('open');
+        settingsContainer?.classList.toggle('open');
+
+        if (sidebar.classList.contains('open')) {
+          // Arrow Right
+          toggleBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+        } else {
+          // Hamburger
+          toggleBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+        }
+      }
+
+      function showReaderError(msg) {
+        document.getElementById('reader-loading').style.display = 'none';
+        const area = document.getElementById('reader-content-area');
+        area.style.display = 'block';
+        area.innerHTML = `
     <div class="empty-state">
       <div class="empty-state-sigil">🥀</div>
       <div class="empty-state-title">The Oracle could not conjure this tome.</div>
       <div class="empty-state-desc">${escHtml(msg)}</div>
       <button class="btn btn-ghost" onclick="backToLibrary()" style="margin-top:1rem;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Return to Library</button>
     </div>`;
-    }
-
-    function showToast(msg) {
-      const el = document.getElementById('toast');
-      el.textContent = msg;
-      el.classList.add('show');
-      setTimeout(() => el.classList.remove('show'), 3000);
-    }
-
-    function escHtml(str) {
-      if (!str) return '';
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-
-    // Sanitise EPUB HTML — keep structure, strip scripts/iframes
-    function sanitiseHtml(html) {
-      const tmp = document.createElement('div');
-      tmp.innerHTML = html;
-      tmp.querySelectorAll('script, iframe, object, embed, form, input, button, style, link').forEach(el => el.remove());
-      // Fix relative image src that didn't get inlined (just hide them)
-      tmp.querySelectorAll('img').forEach(img => {
-        if (!img.src.startsWith('data:')) img.style.display = 'none';
-      });
-      // Remove epub-specific nav elements
-      tmp.querySelectorAll('[epub\\:type="toc"], nav').forEach(el => el.remove());
-      return tmp.innerHTML;
-    }
-
-    // ═══════════════════════════════════════════
-    // READER CONTROLS & UI ENHANCEMENTS
-    // ═══════════════════════════════════════════
-
-    // Reader settings state
-    let readerFontSize = 100;
-    let readerLineHeight = 1.85;
-    let readerTheme = 'light';
-    let lastScrollY = 0;
-
-    // Toggle controls dialog
-    function toggleControls() {
-      const dialog = document.getElementById('reader-controls-dialog');
-      const btn = document.getElementById('sidebar-settings-btn');
-
-      // Resized SVGs (24x24)
-      const iconActive = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 375 375" preserveAspectRatio="xMidYMid meet" version="1.0"><defs><clipPath id="dbe21439d8"><path d="M 37.5 38.410156 L 336.75 38.410156 L 336.75 337.660156 L 37.5 337.660156 Z M 37.5 38.410156 " clip-rule="nonzero"/></clipPath><clipPath id="55ffbd69f9"><path d="M 37.5 37.5 L 111 37.5 L 111 111 L 37.5 111 Z M 37.5 37.5 " clip-rule="nonzero"/></clipPath></defs><g clip-path="url(#dbe21439d8)"><path fill="#c9ac95" d="M 336.59375 187.960938 C 231.714844 212.632812 211.714844 232.632812 187.042969 337.511719 C 162.378906 232.625 142.378906 212.625 37.5 187.960938 C 142.378906 163.289062 162.378906 143.289062 187.050781 38.410156 C 211.714844 143.289062 231.714844 163.289062 336.59375 187.960938 Z M 336.59375 187.960938 " fill-opacity="1" fill-rule="nonzero"/></g><g clip-path="url(#55ffbd69f9)"><path fill="#c9ac95" d="M 110.929688 74.214844 C 85.183594 80.273438 80.273438 85.183594 74.214844 110.933594 C 68.160156 85.183594 63.25 80.273438 37.5 74.214844 C 63.25 68.160156 68.160156 63.25 74.214844 37.5 C 80.273438 63.25 85.183594 68.160156 110.929688 74.214844 Z M 110.929688 74.214844 " fill-opacity="1" fill-rule="nonzero"/></g></svg>';
-      const iconInactive = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 375 375" preserveAspectRatio="xMidYMid meet" version="1.0"><defs><clipPath id="df57ba3ed6"><path d="M 37.5 38.410156 L 336.75 38.410156 L 336.75 337.660156 L 37.5 337.660156 Z M 37.5 38.410156 " clip-rule="nonzero"/></clipPath><clipPath id="a3fdbc7cf1"><path d="M 37.5 37.5 L 111.75 37.5 L 111.75 111.75 L 37.5 111.75 Z M 37.5 37.5 " clip-rule="nonzero"/></clipPath><clipPath id="f3a3a13122"><path d="M 183.824219 156.023438 L 249 156.023438 L 249 221.273438 L 183.824219 221.273438 Z M 183.824219 156.023438 " clip-rule="nonzero"/></clipPath></defs><g clip-path="url(#df57ba3ed6)"><path fill="#6e1e1e" d="M 336.59375 187.960938 C 231.714844 212.632812 211.714844 232.632812 187.042969 337.511719 C 162.378906 232.625 142.378906 212.625 37.5 187.960938 C 142.378906 163.289062 162.378906 143.289062 187.050781 38.410156 C 211.714844 143.289062 231.714844 163.289062 336.59375 187.960938 Z M 336.59375 187.960938 " fill-opacity="1" fill-rule="nonzero"/></g><g clip-path="url(#a3fdbc7cf1)"><path fill="#6e1e1e" d="M 112.042969 74.773438 C 85.90625 80.921875 80.921875 85.90625 74.769531 112.046875 C 68.625 85.90625 63.640625 80.921875 37.5 74.773438 C 63.640625 68.625 68.625 63.640625 74.773438 37.5 C 80.921875 63.640625 85.90625 68.024219 112.042969 74.773438 Z M 112.042969 74.773438 " fill-opacity="1" fill-rule="nonzero"/></g><g clip-path="url(#f3a3a13122)"><path fill="#6e1e1e" d="M 248.96875 188.597656 C 226.125 193.96875 221.769531 198.328125 216.394531 221.171875 C 211.023438 198.324219 206.667969 193.96875 183.824219 188.597656 C 206.667969 183.222656 211.023438 178.867188 216.394531 156.023438 C 221.769531 178.867188 226.125 183.222656 248.96875 188.597656 Z M 248.96875 188.597656 " fill-opacity="1" fill-rule="nonzero"/></g></svg>';
-
-      const isOpen = dialog.classList.contains('open');
-
-      if (isOpen) {
-        dialog.classList.remove('open');
-        // No backdrop to remove
-        btn.classList.remove('active');
-        btn.innerHTML = iconInactive;
-      } else {
-        dialog.classList.add('open');
-        btn.classList.add('active');
-        btn.innerHTML = iconActive;
       }
-    }
 
-    // Close controls when clicking outside (using backdrop)
-    document.addEventListener('click', (e) => {
-      const dialog = document.getElementById('reader-controls-dialog');
-      const btn = document.getElementById('sidebar-settings-btn');
-      const backdrop = document.getElementById('reader-backdrop');
-
-      if (dialog && dialog.classList.contains('open') &&
-        !dialog.contains(e.target) &&
-        !btn.contains(e.target) &&
-        e.target !== backdrop) {
-        toggleControls();
+      function showToast(msg) {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 3000);
       }
-    });
 
-    // Adjust EPUB font size
-    function adjustReaderFontSize(delta) {
-      readerFontSize = Math.max(60, Math.min(200, readerFontSize + delta));
-      const display = document.getElementById('epub-font-size-display');
-      if (display) display.textContent = readerFontSize + '%';
-      applyReaderStyles();
-    }
-
-    // Adjust line height
-    function adjustLineHeight(delta) {
-      readerLineHeight = Math.max(1.2, Math.min(2.5, readerLineHeight + delta));
-      document.getElementById('line-height-display').textContent = readerLineHeight.toFixed(1);
-      applyReaderStyles();
-    }
-
-    // Set reader theme
-    function setReaderTheme(theme) {
-      readerTheme = theme;
-      document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelector(`[data-theme="${theme}"]`).classList.add('active');
-      applyReaderStyles();
-    }
-
-    // Apply reader styles to content
-    function applyReaderStyles() {
-      const chapter = document.querySelector('.epub-chapter');
-      if (!chapter) return;
-
-      const baseFontSize = 1.05;
-      const actualSize = (baseFontSize * readerFontSize / 100).toFixed(2);
-
-      chapter.style.fontSize = actualSize + 'rem';
-      chapter.style.lineHeight = readerLineHeight;
-
-      const readerMain = document.getElementById('reader-main');
-
-      // Theme colors per user request
-      // Light: #F2EADE
-      // Sepia (White): #FFFFFF
-      // Dark: #000000
-
-      if (readerTheme === 'sepia') {
-        readerMain.style.background = '#FFFFFF';
-        chapter.style.color = '#1a1a1a'; // Dark grey for contrast on white
-      } else if (readerTheme === 'dark') {
-        readerMain.style.background = '#000000';
-        chapter.style.color = '#d4c4ad'; // Pale vellum for contrast on black
-      } else {
-        readerMain.style.background = '#F2EADE';
-        chapter.style.color = '#2a1e18';
+      function escHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
       }
-    }
 
-    // Header hide/show on scroll in reader mode
-    let headerHideTimeout;
-    function handleReaderScroll() {
-      const currentPage = document.querySelector('.page.active');
-      if (!currentPage || currentPage.id !== 'page-reader') return;
+      // Sanitise EPUB HTML — keep structure, strip scripts/iframes
+      function sanitiseHtml(html) {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        tmp.querySelectorAll('script, iframe, object, embed, form, input, button, style, link').forEach(el => el.remove());
+        // Fix relative image src that didn't get inlined (just hide them)
+        tmp.querySelectorAll('img').forEach(img => {
+          if (!img.src.startsWith('data:')) img.style.display = 'none';
+        });
+        // Remove epub-specific nav elements
+        tmp.querySelectorAll('[epub\\:type="toc"], nav').forEach(el => el.remove());
+        return tmp.innerHTML;
+      }
 
-      // DO NOT hide controls if sidebar is open
-      const sidebar = document.getElementById('reader-sidebar');
-      if (sidebar && sidebar.classList.contains('open')) return;
+      // ═══════════════════════════════════════════
+      // READER CONTROLS & UI ENHANCEMENTS
+      // ═══════════════════════════════════════════
 
-      const header = document.querySelector('header');
-      const sidebarToggle = document.getElementById('sidebar-toggle');
-      const settingsContainer = document.querySelector('.sidebar-settings-container');
-      const readerMain = document.getElementById('reader-main');
-      const currentScrollY = readerMain.scrollTop;
+      // Reader settings state
+      let readerFontSize = 100;
+      let readerLineHeight = 1.85;
+      let readerTheme = 'light';
+      let lastScrollY = 0;
 
-      const delta = currentScrollY - lastScrollY;
-      const threshold = 10;
+      // Toggle controls dialog
+      function toggleControls() {
+        const dialog = document.getElementById('reader-controls-dialog');
+        const btn = document.getElementById('sidebar-settings-btn');
 
-      // Only act if scroll delta exceeds threshold
-      if (Math.abs(delta) > threshold) {
-        if (delta > 0 && currentScrollY > 100) {
-          // Scrolling DOWN: Hide controls
-          header.classList.add('hidden');
-          sidebarToggle?.classList.add('hidden');
-          settingsContainer?.classList.add('hidden');
-          document.body.classList.add('reader-fullscreen');
-        } else if (delta < 0) {
-          // Scrolling UP: Immediately show controls
-          header.classList.remove('hidden');
-          sidebarToggle?.classList.remove('hidden');
-          settingsContainer?.classList.remove('hidden');
-          document.body.classList.remove('reader-fullscreen');
+        // Resized SVGs (24x24)
+        const iconActive = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 375 375" preserveAspectRatio="xMidYMid meet" version="1.0"><defs><clipPath id="dbe21439d8"><path d="M 37.5 38.410156 L 336.75 38.410156 L 336.75 337.660156 L 37.5 337.660156 Z M 37.5 38.410156 " clip-rule="nonzero"/></clipPath><clipPath id="55ffbd69f9"><path d="M 37.5 37.5 L 111 37.5 L 111 111 L 37.5 111 Z M 37.5 37.5 " clip-rule="nonzero"/></clipPath></defs><g clip-path="url(#dbe21439d8)"><path fill="#c9ac95" d="M 336.59375 187.960938 C 231.714844 212.632812 211.714844 232.632812 187.042969 337.511719 C 162.378906 232.625 142.378906 212.625 37.5 187.960938 C 142.378906 163.289062 162.378906 143.289062 187.050781 38.410156 C 211.714844 143.289062 231.714844 163.289062 336.59375 187.960938 Z M 336.59375 187.960938 " fill-opacity="1" fill-rule="nonzero"/></g><g clip-path="url(#55ffbd69f9)"><path fill="#c9ac95" d="M 110.929688 74.214844 C 85.183594 80.273438 80.273438 85.183594 74.214844 110.933594 C 68.160156 85.183594 63.25 80.273438 37.5 74.214844 C 63.25 68.160156 68.160156 63.25 74.214844 37.5 C 80.273438 63.25 85.183594 68.160156 110.929688 74.214844 Z M 110.929688 74.214844 " fill-opacity="1" fill-rule="nonzero"/></g></svg>';
+        const iconInactive = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 375 375" preserveAspectRatio="xMidYMid meet" version="1.0"><defs><clipPath id="df57ba3ed6"><path d="M 37.5 38.410156 L 336.75 38.410156 L 336.75 337.660156 L 37.5 337.660156 Z M 37.5 38.410156 " clip-rule="nonzero"/></clipPath><clipPath id="a3fdbc7cf1"><path d="M 37.5 37.5 L 111.75 37.5 L 111.75 111.75 L 37.5 111.75 Z M 37.5 37.5 " clip-rule="nonzero"/></clipPath><clipPath id="f3a3a13122"><path d="M 183.824219 156.023438 L 249 156.023438 L 249 221.273438 L 183.824219 221.273438 Z M 183.824219 156.023438 " clip-rule="nonzero"/></clipPath></defs><g clip-path="url(#df57ba3ed6)"><path fill="#6e1e1e" d="M 336.59375 187.960938 C 231.714844 212.632812 211.714844 232.632812 187.042969 337.511719 C 162.378906 232.625 142.378906 212.625 37.5 187.960938 C 142.378906 163.289062 162.378906 143.289062 187.050781 38.410156 C 211.714844 143.289062 231.714844 163.289062 336.59375 187.960938 Z M 336.59375 187.960938 " fill-opacity="1" fill-rule="nonzero"/></g><g clip-path="url(#a3fdbc7cf1)"><path fill="#6e1e1e" d="M 112.042969 74.773438 C 85.90625 80.921875 80.921875 85.90625 74.769531 112.046875 C 68.625 85.90625 63.640625 80.921875 37.5 74.773438 C 63.640625 68.625 68.625 63.640625 74.773438 37.5 C 80.921875 63.640625 85.90625 68.024219 112.042969 74.773438 Z M 112.042969 74.773438 " fill-opacity="1" fill-rule="nonzero"/></g><g clip-path="url(#f3a3a13122)"><path fill="#6e1e1e" d="M 248.96875 188.597656 C 226.125 193.96875 221.769531 198.328125 216.394531 221.171875 C 211.023438 198.324219 206.667969 193.96875 183.824219 188.597656 C 206.667969 183.222656 211.023438 178.867188 216.394531 156.023438 C 221.769531 178.867188 226.125 183.222656 248.96875 188.597656 Z M 248.96875 188.597656 " fill-opacity="1" fill-rule="nonzero"/></g></svg>';
+
+        const isOpen = dialog.classList.contains('open');
+
+        if (isOpen) {
+          dialog.classList.remove('open');
+          // No backdrop to remove
+          btn.classList.remove('active');
+          btn.innerHTML = iconInactive;
+        } else {
+          dialog.classList.add('open');
+          btn.classList.add('active');
+          btn.innerHTML = iconActive;
         }
-        lastScrollY = currentScrollY;
       }
-    }
 
-    // Attach scroll listener to reader
-    const readerMainEl = document.getElementById('reader-main');
-    if (readerMainEl) {
-      readerMainEl.addEventListener('scroll', handleReaderScroll);
-    }
+      // Close controls when clicking outside (using backdrop)
+      document.addEventListener('click', (e) => {
+        const dialog = document.getElementById('reader-controls-dialog');
+        const btn = document.getElementById('sidebar-settings-btn');
+        const backdrop = document.getElementById('reader-backdrop');
 
-    // Fetch title from URL params (for fixing "Untitled" issue)
-    function fetchTitleFromParams() {
-      const params = new URLSearchParams(window.location.search);
-      return params.get('title') || null;
-    }
+        if (dialog && dialog.classList.contains('open') &&
+          !dialog.contains(e.target) &&
+          !btn.contains(e.target) &&
+          e.target !== backdrop) {
+          toggleControls();
+        }
+      });
 
-  </script>
+      // Adjust EPUB font size
+      function adjustReaderFontSize(delta) {
+        readerFontSize = Math.max(60, Math.min(200, readerFontSize + delta));
+        const display = document.getElementById('epub-font-size-display');
+        if (display) display.textContent = readerFontSize + '%';
+        applyReaderStyles();
+      }
+
+      // Adjust line height
+      function adjustLineHeight(delta) {
+        readerLineHeight = Math.max(1, Math.min(3, readerLineHeight + delta));
+        const display = document.getElementById('line-height-display');
+        if (display) display.textContent = readerLineHeight.toFixed(1);
+        applyReaderStyles();
+      }
+
+      // Set reader theme
+      function setReaderTheme(theme) {
+        readerTheme = theme;
+        document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`[data-theme="${theme}"]`).classList.add('active');
+        applyReaderStyles();
+      }
+
+      // Apply reader styles to content
+      function applyReaderStyles() {
+        const chapter = document.querySelector('.epub-chapter');
+        if (!chapter) return;
+
+        const baseFontSize = 1.05;
+        const actualSize = (baseFontSize * readerFontSize / 100).toFixed(2);
+
+        chapter.style.fontSize = actualSize + 'rem';
+        chapter.style.lineHeight = readerLineHeight;
+
+        const readerMain = document.getElementById('reader-main');
+
+        // Theme colors per user request
+        // Light: #F2EADE
+        // Sepia (White): #FFFFFF
+        // Dark: #000000
+
+        if (readerTheme === 'sepia') {
+          readerMain.style.background = '#FFFFFF';
+          chapter.style.color = '#1a1a1a'; // Dark grey for contrast on white
+        } else if (readerTheme === 'dark') {
+          readerMain.style.background = '#000000';
+          chapter.style.color = '#d4c4ad'; // Pale vellum for contrast on black
+        } else {
+          readerMain.style.background = '#F2EADE';
+          chapter.style.color = '#2a1e18';
+        }
+      }
+
+      // Header hide/show on scroll in reader mode
+      let headerHideTimeout;
+      function handleReaderScroll() {
+        const currentPage = document.querySelector('.page.active');
+        if (!currentPage || currentPage.id !== 'page-reader') return;
+
+        // DO NOT hide controls if sidebar is open
+        const sidebar = document.getElementById('reader-sidebar');
+        if (sidebar && sidebar.classList.contains('open')) return;
+
+        const header = document.querySelector('header');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const settingsContainer = document.querySelector('.sidebar-settings-container');
+        const readerMain = document.getElementById('reader-main');
+        const currentScrollY = readerMain.scrollTop;
+
+        const delta = currentScrollY - lastScrollY;
+        const threshold = 10;
+
+        // Only act if scroll delta exceeds threshold
+        if (Math.abs(delta) > threshold) {
+          if (delta > 0 && currentScrollY > 100) {
+            // Scrolling DOWN: Hide controls
+            header.classList.add('hidden');
+            sidebarToggle?.classList.add('hidden');
+            settingsContainer?.classList.add('hidden');
+            document.body.classList.add('reader-fullscreen');
+          } else if (delta < 0) {
+            // Scrolling UP: Immediately show controls
+            header.classList.remove('hidden');
+            sidebarToggle?.classList.remove('hidden');
+            settingsContainer?.classList.remove('hidden');
+            document.body.classList.remove('reader-fullscreen');
+          }
+          lastScrollY = currentScrollY;
+        }
+      }
+
+      // Attach scroll listener to reader
+      const readerMainEl = document.getElementById('reader-main');
+      if (readerMainEl) {
+        readerMainEl.addEventListener('scroll', handleReaderScroll);
+      }
+
+      // Fetch title from URL params (for fixing "Untitled" issue)
+      function fetchTitleFromParams() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('title') || null;
+      }
+
+    </script>
 </body>
 
 </html>
