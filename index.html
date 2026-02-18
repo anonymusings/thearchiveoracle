@@ -772,14 +772,7 @@
       flex-direction: column;
     }
 
-    /* Sidebar toggle visibility */
-    #page-reader .sidebar-toggle {
-      display: none;
-    }
-
-    #page-reader.active .sidebar-toggle {
-      display: flex;
-    }
+    /* Sidebar toggle lives inside .sidebar-footer — always visible when sidebar is present */
 
     .reader-layout {
       display: flex;
@@ -788,16 +781,9 @@
       position: fixed;
       top: 0;
       left: 0;
-      overflow: visible;
+      overflow: hidden;
       z-index: 100;
       background: var(--ink-soft);
-    }
-
-    /* Clip only the reader-main area, not the whole layout */
-    .reader-main-wrapper {
-      flex: 1;
-      overflow: hidden;
-      position: relative;
     }
 
     /* Sidebar */
@@ -812,12 +798,13 @@
       position: relative;
       transition: transform 0.3s var(--ease-out);
       z-index: 200;
-      height: 100vh;
+      height: 100%;
     }
 
     .sidebar-scroll-area {
       flex: 1;
       overflow-y: auto;
+      overflow-x: hidden;
       display: flex;
       flex-direction: column;
       min-height: 0;
@@ -1177,15 +1164,10 @@
     }
 
     /* ═══════════════════════════════════════════
-   SIDEBAR TOGGLE (mobile)
+   SIDEBAR TOGGLE (inside footer bar)
 ═══════════════════════════════════════════ */
     .sidebar-toggle {
       display: flex;
-      /* visible on all screen sizes */
-      position: fixed;
-      bottom: 1.5rem;
-      left: 1.5rem;
-      z-index: 301;
       background: var(--crimson);
       border: none;
       color: var(--white);
@@ -1197,15 +1179,15 @@
       align-items: center;
       justify-content: center;
       font-size: 1.1rem;
-      transition: opacity 0.3s, transform 0.3s;
+      transition: background 0.2s;
+      flex-shrink: 0;
     }
 
     .sidebar-toggle svg {
       transition: transform 0.3s;
     }
 
-    /* Arrow state for toggle */
-    .sidebar-toggle.open {
+    .sidebar-toggle:hover {
       background: var(--crimson-deep);
     }
 
@@ -1241,14 +1223,16 @@
       display: none;
       position: absolute;
       bottom: calc(100% + 0.5rem);
-      right: 0;
-      width: 260px;
+      right: -0.75rem;
+      /* align with right edge of sidebar, accounting for footer padding */
+      width: 256px;
+      /* fits comfortably within the 280px sidebar */
       z-index: 9999;
       background: #0a0a0a;
       border: 1px solid var(--crimson);
       border-radius: 4px;
       padding: 1rem;
-      box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(111, 31, 30, 0.4);
+      box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.8);
     }
 
     .reader-controls-dialog.open {
@@ -1420,18 +1404,27 @@
     }
 
     /* ═══════════════════════════════════════════
-       SIDEBAR SETTINGS BUTTON
+       SIDEBAR FOOTER BAR (toggle + settings on same row)
     ═══════════════════════════════════════════ */
+    .sidebar-footer {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.75rem;
+      border-top: 1px solid rgba(111, 31, 30, 0.2);
+      background: var(--ink-soft);
+      position: relative;
+      overflow: visible;
+    }
+
+    /* Settings button (right side of footer) */
     .sidebar-settings-container {
       position: relative;
-      padding: 1rem 1.5rem;
-      border-top: 1px solid rgba(111, 31, 30, 0.2);
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      pointer-events: auto;
-      background: var(--ink-soft);
-      flex-shrink: 0;
+      overflow: visible;
     }
 
     .sidebar-settings-btn {
@@ -1445,17 +1438,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
-      transition: color 0.2s, background 0.2s;
       padding: 0;
-      z-index: 210;
-      pointer-events: auto;
-    }
-
-    .sidebar-settings-btn svg {
-      width: 34px;
-      height: 34px;
-      fill: currentColor;
+      transition: color 0.2s;
+      flex-shrink: 0;
     }
 
     .sidebar-settings-btn:hover {
@@ -1463,7 +1448,6 @@
     }
 
     .sidebar-settings-btn.active {
-      background: transparent;
       color: #C9AC95;
     }
 
@@ -1475,10 +1459,17 @@
 
     body.reader-fullscreen .page {
       padding-top: 0;
+      /* Remove header space reservation */
     }
 
     body.reader-fullscreen header {
       transform: translateY(-100%);
+    }
+
+    .reader-sidebar {
+      top: 0;
+      height: 100vh;
+      /* Ensure full height */
     }
 
     .loading-state {
@@ -1596,27 +1587,10 @@
 
       .sidebar-toggle {
         display: flex;
-        z-index: 201;
-        /* Above sidebar */
-      }
-
-      .sidebar-toggle.hidden,
-      .sidebar-settings-container.hidden {
-        opacity: 0;
-        pointer-events: none;
-        transform: translateY(20px);
       }
 
       .sidebar-settings-container {
-        /* On mobile, ensure it stays visible within sidebar */
         display: flex;
-        padding: 0.75rem 1rem;
-      }
-
-      .sidebar-settings-container.hidden {
-        opacity: 0;
-        pointer-events: none;
-        transform: translateY(20px);
       }
 
       .reader-main {
@@ -1812,73 +1786,80 @@
           </div>
         </div>
 
-        <!-- Settings button is back INSIDE the sidebar as requested -->
-        <div class="sidebar-settings-container" id="sidebar-settings-container">
-          <!-- Settings dialog (appears above button) -->
-          <div class="reader-controls-dialog" id="reader-controls-dialog">
-            <!-- Left column: font size + line spacing -->
-            <div class="controls-left">
-              <div class="control-group">
-                <span class="control-label">text size</span>
-                <div class="control-buttons">
-                  <button class="control-btn" onclick="adjustReaderFontSize(10)" title="Increase">Aa+</button>
-                  <button class="control-btn" onclick="adjustReaderFontSize(-10)" title="Decrease">Aa−</button>
-                </div>
-              </div>
-              <div class="control-group">
-                <span class="control-label">line spacing</span>
-                <div class="control-buttons">
-                  <button class="control-btn" onclick="adjustLineHeight(0.1)" title="Increase">+</button>
-                  <button class="control-btn" onclick="adjustLineHeight(-0.1)" title="Decrease">−</button>
-                </div>
-              </div>
-            </div>
-            <!-- Right column: theme circles -->
-            <div class="controls-right">
-              <div class="theme-row">
-                <button class="theme-btn active" onclick="setReaderTheme('light')" data-theme="light"></button>
-                <button class="theme-btn" onclick="setReaderTheme('sepia')" data-theme="sepia"></button>
-                <button class="theme-btn" onclick="setReaderTheme('dark')" data-theme="dark"></button>
-              </div>
-            </div>
-          </div>
+        <!-- Sidebar footer: hamburger (left) + settings (right) on same row -->
+        <div class="sidebar-footer" id="sidebar-footer">
 
-          <button class="sidebar-settings-btn" id="sidebar-settings-btn" onclick="toggleControls()">
-            <svg id="settings-icon-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-              width="34" height="34" viewBox="0 0 375 375" preserveAspectRatio="xMidYMid meet" version="1.0">
-              <defs>
-                <clipPath id="df57ba3ed6_sidebar">
-                  <path
-                    d="M 37.5 38.410156 L 336.75 38.410156 L 336.75 337.660156 L 37.5 337.660156 Z M 37.5 38.410156 "
-                    clip-rule="nonzero" />
-                </clipPath>
-                <clipPath id="a3fdbc7cf1_sidebar">
-                  <path d="M 37.5 37.5 L 111.75 37.5 L 111.75 111.75 L 37.5 111.75 Z M 37.5 37.5 "
-                    clip-rule="nonzero" />
-                </clipPath>
-                <clipPath id="f3a3a13122_sidebar">
-                  <path
-                    d="M 183.824219 156.023438 L 249 156.023438 L 249 221.273438 L 183.824219 221.273438 Z M 183.824219 156.023438 "
-                    clip-rule="nonzero" />
-                </clipPath>
-              </defs>
-              <g clip-path="url(#df57ba3ed6_sidebar)">
-                <path fill="currentColor"
-                  d="M 336.59375 187.960938 C 231.714844 212.632812 211.714844 232.632812 187.042969 337.511719 C 162.378906 232.625 142.378906 212.625 37.5 187.960938 C 142.378906 163.289062 162.378906 143.289062 187.050781 38.410156 C 211.714844 143.289062 231.714844 163.289062 336.59375 187.960938 Z M 336.59375 187.960938 "
-                  fill-opacity="1" fill-rule="nonzero" />
-              </g>
-              <g clip-path="url(#a3fdbc7cf1_sidebar)">
-                <path fill="currentColor"
-                  d="M 112.042969 74.773438 C 85.90625 80.921875 80.921875 85.90625 74.769531 112.046875 C 68.625 85.90625 63.640625 80.921875 37.5 74.773438 C 63.640625 68.625 68.625 63.640625 74.773438 37.5 C 80.921875 63.640625 85.90625 68.625 112.042969 74.773438 Z M 112.042969 74.773438 "
-                  fill-opacity="1" fill-rule="nonzero" />
-              </g>
-              <g clip-path="url(#f3a3a13122_sidebar)">
-                <path fill="currentColor"
-                  d="M 248.96875 188.597656 C 226.125 193.96875 221.769531 198.328125 216.394531 221.171875 C 211.023438 198.324219 206.667969 193.96875 183.824219 188.597656 C 206.667969 183.222656 211.023438 178.867188 216.394531 156.023438 C 221.769531 178.867188 226.125 183.222656 248.96875 188.597656 Z M 248.96875 188.597656 "
-                  fill-opacity="1" fill-rule="nonzero" />
-              </g>
+          <!-- Hamburger toggle — left side -->
+          <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
             </svg>
           </button>
+
+          <!-- Settings button + dialog — right side -->
+          <div class="sidebar-settings-container" id="sidebar-settings-container">
+
+            <!-- Dialog pops up from here -->
+            <div class="reader-controls-dialog" id="reader-controls-dialog">
+              <!-- Left column: font size + line spacing -->
+              <div class="controls-left">
+                <div class="control-group">
+                  <span class="control-label">text size</span>
+                  <div class="control-buttons">
+                    <button class="control-btn" onclick="adjustReaderFontSize(10)" title="Increase">Aa+</button>
+                    <button class="control-btn" onclick="adjustReaderFontSize(-10)" title="Decrease">Aa−</button>
+                  </div>
+                </div>
+                <div class="control-group">
+                  <span class="control-label">line spacing</span>
+                  <div class="control-buttons">
+                    <button class="control-btn" onclick="adjustLineHeight(0.1)" title="Increase">+</button>
+                    <button class="control-btn" onclick="adjustLineHeight(-0.1)" title="Decrease">−</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Right column: theme circles -->
+              <div class="controls-right">
+                <div class="theme-row">
+                  <button class="theme-btn active" onclick="setReaderTheme('light')" data-theme="light"></button>
+                  <button class="theme-btn" onclick="setReaderTheme('sepia')" data-theme="sepia"></button>
+                  <button class="theme-btn" onclick="setReaderTheme('dark')" data-theme="dark"></button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Settings icon button: 2.svg = default (crimson), 1.svg = active (tan) -->
+            <button class="sidebar-settings-btn" id="sidebar-settings-btn" onclick="toggleControls()">
+              <!-- Default icon: 2.svg — crimson, 3 stars -->
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="28" height="28" viewBox="0 0 375 374.999991" preserveAspectRatio="xMidYMid meet" version="1.0">
+                <defs>
+                  <clipPath id="s2_clip1">
+                    <path d="M 37.5 38.410156 L 336.75 38.410156 L 336.75 337.660156 L 37.5 337.660156 Z" clip-rule="nonzero"/>
+                  </clipPath>
+                  <clipPath id="s2_clip2">
+                    <path d="M 37.5 37.5 L 111.75 37.5 L 111.75 111.75 L 37.5 111.75 Z" clip-rule="nonzero"/>
+                  </clipPath>
+                  <clipPath id="s2_clip3">
+                    <path d="M 183.824219 156.023438 L 249 156.023438 L 249 221.273438 L 183.824219 221.273438 Z" clip-rule="nonzero"/>
+                  </clipPath>
+                </defs>
+                <g clip-path="url(#s2_clip1)">
+                  <path fill="currentColor" d="M 336.59375 187.960938 C 231.714844 212.632812 211.714844 232.632812 187.042969 337.511719 C 162.378906 232.625 142.378906 212.625 37.5 187.960938 C 142.378906 163.289062 162.378906 143.289062 187.050781 38.410156 C 211.714844 143.289062 231.714844 163.289062 336.59375 187.960938 Z" fill-opacity="1" fill-rule="nonzero"/>
+                </g>
+                <g clip-path="url(#s2_clip2)">
+                  <path fill="currentColor" d="M 112.042969 74.773438 C 85.90625 80.921875 80.921875 85.90625 74.769531 112.046875 C 68.625 85.90625 63.640625 80.921875 37.5 74.773438 C 63.640625 68.625 68.625 63.640625 74.773438 37.5 C 80.921875 63.640625 85.90625 68.625 112.042969 74.773438 Z" fill-opacity="1" fill-rule="nonzero"/>
+                </g>
+                <g clip-path="url(#s2_clip3)">
+                  <path fill="currentColor" d="M 248.96875 188.597656 C 226.125 193.96875 221.769531 198.328125 216.394531 221.171875 C 211.023438 198.324219 206.667969 193.96875 183.824219 188.597656 C 206.667969 183.222656 211.023438 178.867188 216.394531 156.023438 C 221.769531 178.867188 226.125 183.222656 248.96875 188.597656 Z" fill-opacity="1" fill-rule="nonzero"/>
+                </g>
+              </svg>
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -1890,16 +1871,6 @@
         </div>
         <div id="reader-content-area" style="display:none;"></div>
       </div>
-
-      <!-- Sidebar toggle (hamburger menu) — fixed bottom-left -->
-      <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="12" x2="21" y2="12" />
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <line x1="3" y1="18" x2="21" y2="18" />
-        </svg>
-      </button>
 
     </div>
 
@@ -2214,11 +2185,9 @@
         currentFic = fic;
         showPage('reader');
 
-        // Ensure sidebar toggle is visible
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-        const settingsContainer = document.querySelector('.sidebar-settings-container');
-        if (sidebarToggle) sidebarToggle.classList.remove('hidden');
-        if (settingsContainer) settingsContainer.classList.remove('hidden');
+        // Ensure sidebar is ready
+        const sidebarEl = document.getElementById('reader-sidebar');
+        if (sidebarEl) sidebarEl.classList.remove('hidden');
 
         // Title: prefer fic.title, fallback to extracting from the original URL stored in fic
         let displayTitle = (fic.title && fic.title !== 'Untitled') ? fic.title : extractTitleFromUrl(fic.fileUrl);
@@ -2520,18 +2489,16 @@
       function toggleSidebar() {
         const sidebar = document.getElementById('reader-sidebar');
         const toggleBtn = document.getElementById('sidebar-toggle');
-        const settingsContainer = document.querySelector('.sidebar-settings-container');
 
         sidebar.classList.toggle('open');
         toggleBtn.classList.toggle('open');
-        settingsContainer?.classList.toggle('open');
 
         if (sidebar.classList.contains('open')) {
           // Arrow Right
-          toggleBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+          toggleBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
         } else {
           // Hamburger
-          toggleBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+          toggleBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
         }
       }
 
@@ -2589,15 +2556,16 @@
         const dialog = document.getElementById('reader-controls-dialog');
         const btn = document.getElementById('sidebar-settings-btn');
 
-        // Resized SVGs (24x24)
-        const iconActive = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 375 375" preserveAspectRatio="xMidYMid meet" version="1.0"><defs><clipPath id="dbe21439d8"><path d="M 37.5 38.410156 L 336.75 38.410156 L 336.75 337.660156 L 37.5 337.660156 Z M 37.5 38.410156 " clip-rule="nonzero"/></clipPath><clipPath id="55ffbd69f9"><path d="M 37.5 37.5 L 111 37.5 L 111 111 L 37.5 111 Z M 37.5 37.5 " clip-rule="nonzero"/></clipPath></defs><g clip-path="url(#dbe21439d8)"><path fill="#c9ac95" d="M 336.59375 187.960938 C 231.714844 212.632812 211.714844 232.632812 187.042969 337.511719 C 162.378906 232.625 142.378906 212.625 37.5 187.960938 C 142.378906 163.289062 162.378906 143.289062 187.050781 38.410156 C 211.714844 143.289062 231.714844 163.289062 336.59375 187.960938 Z M 336.59375 187.960938 " fill-opacity="1" fill-rule="nonzero"/></g><g clip-path="url(#55ffbd69f9)"><path fill="#c9ac95" d="M 110.929688 74.214844 C 85.183594 80.273438 80.273438 85.183594 74.214844 110.933594 C 68.160156 85.183594 63.25 80.273438 37.5 74.214844 C 63.25 68.160156 68.160156 63.25 74.214844 37.5 C 80.273438 63.25 85.183594 68.160156 110.929688 74.214844 Z M 110.929688 74.214844 " fill-opacity="1" fill-rule="nonzero"/></g></svg>';
-        const iconInactive = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 375 375" preserveAspectRatio="xMidYMid meet" version="1.0"><defs><clipPath id="df57ba3ed6"><path d="M 37.5 38.410156 L 336.75 38.410156 L 336.75 337.660156 L 37.5 337.660156 Z M 37.5 38.410156 " clip-rule="nonzero"/></clipPath><clipPath id="a3fdbc7cf1"><path d="M 37.5 37.5 L 111.75 37.5 L 111.75 111.75 L 37.5 111.75 Z M 37.5 37.5 " clip-rule="nonzero"/></clipPath><clipPath id="f3a3a13122"><path d="M 183.824219 156.023438 L 249 156.023438 L 249 221.273438 L 183.824219 221.273438 Z M 183.824219 156.023438 " clip-rule="nonzero"/></clipPath></defs><g clip-path="url(#df57ba3ed6)"><path fill="#6e1e1e" d="M 336.59375 187.960938 C 231.714844 212.632812 211.714844 232.632812 187.042969 337.511719 C 162.378906 232.625 142.378906 212.625 37.5 187.960938 C 142.378906 163.289062 162.378906 143.289062 187.050781 38.410156 C 211.714844 143.289062 231.714844 163.289062 336.59375 187.960938 Z M 336.59375 187.960938 " fill-opacity="1" fill-rule="nonzero"/></g><g clip-path="url(#a3fdbc7cf1)"><path fill="#6e1e1e" d="M 112.042969 74.773438 C 85.90625 80.921875 80.921875 85.90625 74.769531 112.046875 C 68.625 85.90625 63.640625 80.921875 37.5 74.773438 C 63.640625 68.625 68.625 63.640625 74.773438 37.5 C 80.921875 63.640625 85.90625 68.024219 112.042969 74.773438 Z M 112.042969 74.773438 " fill-opacity="1" fill-rule="nonzero"/></g><g clip-path="url(#f3a3a13122)"><path fill="#6e1e1e" d="M 248.96875 188.597656 C 226.125 193.96875 221.769531 198.328125 216.394531 221.171875 C 211.023438 198.324219 206.667969 193.96875 183.824219 188.597656 C 206.667969 183.222656 211.023438 178.867188 216.394531 156.023438 C 221.769531 178.867188 226.125 183.222656 248.96875 188.597656 Z M 248.96875 188.597656 " fill-opacity="1" fill-rule="nonzero"/></g></svg>';
+        // 1.svg = active/open state — tan #C9AC95, 2 stars
+        const iconActive = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="28" height="28" viewBox="0 0 375 374.999991" preserveAspectRatio="xMidYMid meet" version="1.0"><defs><clipPath id="s1a_clip1"><path d="M 37.5 38.410156 L 336.75 38.410156 L 336.75 337.660156 L 37.5 337.660156 Z" clip-rule="nonzero"/></clipPath><clipPath id="s1a_clip2"><path d="M 37.5 37.5 L 111 37.5 L 111 111 L 37.5 111 Z" clip-rule="nonzero"/></clipPath></defs><g clip-path="url(#s1a_clip1)"><path fill="#C9AC95" d="M 336.59375 187.960938 C 231.714844 212.632812 211.714844 232.632812 187.042969 337.511719 C 162.378906 232.625 142.378906 212.625 37.5 187.960938 C 142.378906 163.289062 162.378906 143.289062 187.050781 38.410156 C 211.714844 143.289062 231.714844 163.289062 336.59375 187.960938 Z" fill-opacity="1" fill-rule="nonzero"/></g><g clip-path="url(#s1a_clip2)"><path fill="#C9AC95" d="M 110.929688 74.214844 C 85.183594 80.273438 80.273438 85.183594 74.214844 110.933594 C 68.160156 85.183594 63.25 80.273438 37.5 74.214844 C 63.25 68.160156 68.160156 63.25 74.214844 37.5 C 80.273438 63.25 85.183594 68.160156 110.929688 74.214844 Z" fill-opacity="1" fill-rule="nonzero"/></g></svg>`;
+
+        // 2.svg = inactive/default state — crimson #6E1E1E, 3 stars
+        const iconInactive = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="28" height="28" viewBox="0 0 375 374.999991" preserveAspectRatio="xMidYMid meet" version="1.0"><defs><clipPath id="s2i_clip1"><path d="M 37.5 38.410156 L 336.75 38.410156 L 336.75 337.660156 L 37.5 337.660156 Z" clip-rule="nonzero"/></clipPath><clipPath id="s2i_clip2"><path d="M 37.5 37.5 L 111.75 37.5 L 111.75 111.75 L 37.5 111.75 Z" clip-rule="nonzero"/></clipPath><clipPath id="s2i_clip3"><path d="M 183.824219 156.023438 L 249 156.023438 L 249 221.273438 L 183.824219 221.273438 Z" clip-rule="nonzero"/></clipPath></defs><g clip-path="url(#s2i_clip1)"><path fill="#6e1e1e" d="M 336.59375 187.960938 C 231.714844 212.632812 211.714844 232.632812 187.042969 337.511719 C 162.378906 232.625 142.378906 212.625 37.5 187.960938 C 142.378906 163.289062 162.378906 143.289062 187.050781 38.410156 C 211.714844 143.289062 231.714844 163.289062 336.59375 187.960938 Z" fill-opacity="1" fill-rule="nonzero"/></g><g clip-path="url(#s2i_clip2)"><path fill="#6e1e1e" d="M 112.042969 74.773438 C 85.90625 80.921875 80.921875 85.90625 74.769531 112.046875 C 68.625 85.90625 63.640625 80.921875 37.5 74.773438 C 63.640625 68.625 68.625 63.640625 74.773438 37.5 C 80.921875 63.640625 85.90625 68.625 112.042969 74.773438 Z" fill-opacity="1" fill-rule="nonzero"/></g><g clip-path="url(#s2i_clip3)"><path fill="#6e1e1e" d="M 248.96875 188.597656 C 226.125 193.96875 221.769531 198.328125 216.394531 221.171875 C 211.023438 198.324219 206.667969 193.96875 183.824219 188.597656 C 206.667969 183.222656 211.023438 178.867188 216.394531 156.023438 C 221.769531 178.867188 226.125 183.222656 248.96875 188.597656 Z" fill-opacity="1" fill-rule="nonzero"/></g></svg>`;
 
         const isOpen = dialog.classList.contains('open');
 
         if (isOpen) {
           dialog.classList.remove('open');
-          // No backdrop to remove
           btn.classList.remove('active');
           btn.innerHTML = iconInactive;
         } else {
@@ -2686,8 +2654,6 @@
         if (sidebar && sidebar.classList.contains('open')) return;
 
         const header = document.querySelector('header');
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-        const settingsContainer = document.querySelector('.sidebar-settings-container');
         const readerMain = document.getElementById('reader-main');
         const currentScrollY = readerMain.scrollTop;
 
@@ -2697,16 +2663,12 @@
         // Only act if scroll delta exceeds threshold
         if (Math.abs(delta) > threshold) {
           if (delta > 0 && currentScrollY > 100) {
-            // Scrolling DOWN: Hide controls
+            // Scrolling DOWN: Hide header only (footer bar stays in sidebar)
             header.classList.add('hidden');
-            sidebarToggle?.classList.add('hidden');
-            settingsContainer?.classList.add('hidden');
             document.body.classList.add('reader-fullscreen');
           } else if (delta < 0) {
-            // Scrolling UP: Immediately show controls
+            // Scrolling UP: Show header
             header.classList.remove('hidden');
-            sidebarToggle?.classList.remove('hidden');
-            settingsContainer?.classList.remove('hidden');
             document.body.classList.remove('reader-fullscreen');
           }
           lastScrollY = currentScrollY;
