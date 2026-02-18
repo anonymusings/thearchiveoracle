@@ -783,7 +783,19 @@
 
     .reader-layout {
       display: flex;
-      height: 100vh; /* Fill entire screen by default */
+      height: 100vh;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      overflow: visible;
+      z-index: 100;
+      background: var(--ink-soft);
+    }
+
+    /* Clip only the reader-main area, not the whole layout */
+    .reader-main-wrapper {
+      flex: 1;
       overflow: hidden;
       position: relative;
     }
@@ -797,10 +809,10 @@
       display: flex;
       flex-direction: column;
       overflow: visible;
-      /* Crucial for dialog box to show up outside sidebar bounds */
       position: relative;
       transition: transform 0.3s var(--ease-out);
       z-index: 200;
+      height: 100vh;
     }
 
     .sidebar-scroll-area {
@@ -808,6 +820,7 @@
       overflow-y: auto;
       display: flex;
       flex-direction: column;
+      min-height: 0;
     }
 
     .sidebar-meta {
@@ -880,45 +893,8 @@
       /* Extra padding for bottom button */
     }
 
-    .sidebar-settings-container {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 1rem;
-      background: linear-gradient(0deg, var(--ink-soft) 0%, rgba(26, 19, 16, 0.9) 100%);
-      border-top: 1px solid rgba(111, 31, 30, 0.2);
-      display: flex;
-      justify-content: center;
-    }
+    /* This section was causing conflicts and is now handled in the main sidebar settings section below */
 
-    .sidebar-settings-btn {
-      width: 100%;
-      padding: 0.75rem;
-      background: var(--crimson);
-      color: #c9b99a;
-      border: none;
-      border-radius: 2px;
-      cursor: pointer;
-      font-family: var(--font-display);
-      font-size: 0.75rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      transition: all 0.2s;
-    }
-
-    .sidebar-settings-btn:hover {
-      filter: brightness(1.2);
-    }
-
-    .sidebar-settings-btn.active {
-      background: #c9b99a;
-      color: var(--crimson);
-    }
 
     .toc-heading {
       font-family: var(--font-display);
@@ -1264,11 +1240,10 @@
     .reader-controls-dialog {
       display: none;
       position: absolute;
-      bottom: calc(100% + 0.75rem);
+      bottom: calc(100% + 0.5rem);
       right: 0;
-      width: 240px;
-      /* Slimmer to fit within 280px sidebar comfortably */
-      z-index: 250;
+      width: 260px;
+      z-index: 9999;
       background: #0a0a0a;
       border: 1px solid var(--crimson);
       border-radius: 4px;
@@ -1448,14 +1423,15 @@
        SIDEBAR SETTINGS BUTTON
     ═══════════════════════════════════════════ */
     .sidebar-settings-container {
-      position: absolute;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      z-index: 210;
+      position: relative;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid rgba(111, 31, 30, 0.2);
       display: flex;
       flex-direction: column;
       align-items: flex-end;
       pointer-events: auto;
+      background: var(--ink-soft);
+      flex-shrink: 0;
     }
 
     .sidebar-settings-btn {
@@ -1499,17 +1475,10 @@
 
     body.reader-fullscreen .page {
       padding-top: 0;
-      /* Remove header space reservation */
     }
 
     body.reader-fullscreen header {
       transform: translateY(-100%);
-    }
-
-    .reader-sidebar {
-      top: 0;
-      height: 100vh;
-      /* Ensure full height */
     }
 
     .loading-state {
@@ -1641,8 +1610,7 @@
       .sidebar-settings-container {
         /* On mobile, ensure it stays visible within sidebar */
         display: flex;
-        bottom: 1rem;
-        right: 1rem;
+        padding: 0.75rem 1rem;
       }
 
       .sidebar-settings-container.hidden {
