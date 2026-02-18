@@ -1437,8 +1437,8 @@
     }
 
     .sidebar-settings-btn svg {
-      width: 24px;
-      height: 24px;
+      width: 34px;
+      height: 34px;
       fill: currentColor;
     }
 
@@ -1555,6 +1555,10 @@
       .nav-btn {
         padding: 0.5rem 0.6rem;
         font-size: 0.65rem;
+      }
+
+      #nav-library {
+        display: none;
       }
 
       .reader-sidebar {
@@ -1779,7 +1783,7 @@
         </div>
 
         <!-- Settings button fixed at bottom of sidebar -->
-        <div class="sidebar-settings-container" style="position: relative;">
+        <div class="sidebar-settings-container">
           <!-- Dialog anchor point (appears above button) -->
           <div class="reader-controls-dialog" id="reader-controls-dialog">
             <div class="reader-controls-header">reader settings</div>
@@ -2620,16 +2624,6 @@
       }
 
       lastScrollY = currentScrollY;
-
-      // Auto-hide after 3s of no scroll
-      clearTimeout(headerHideTimeout);
-      headerHideTimeout = setTimeout(() => {
-        if (currentScrollY > 100) {
-          header.classList.add('hidden');
-          sidebarToggle?.classList.add('hidden');
-          document.body.classList.add('reader-fullscreen');
-        }
-      }, 3000);
     }
 
     // Attach scroll listener to reader
