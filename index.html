@@ -1232,6 +1232,7 @@
       right: 1.5rem;
       width: 50px;
       height: 50px;
+      background: transparent;
       border: none;
       border-radius: 0;
       cursor: pointer;
@@ -1243,7 +1244,8 @@
     }
 
     .sidebar-settings-btn:hover {
-      box-shadow: 0 0 12px var(--crimson-glow);
+      filter: drop-shadow(0 0 6px var(--crimson-glow));
+      transform: scale(1.1);
     }
 
     .sidebar-settings-btn.active {
