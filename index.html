@@ -1439,6 +1439,19 @@
       filter: invert(0.15) sepia(1) saturate(6) hue-rotate(320deg) brightness(0.7);
     }
 
+    /* Utils */
+    .hidden {
+      display: none !important;
+    }
+
+    .sidebar-toggle.hidden {
+      display: flex !important;
+      /* Keep it flex to allow transition */
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(100px);
+    }
+
     @media (prefers-color-scheme: light) {
       .logo-img {
         filter: invert(0) sepia(1) saturate(4) hue-rotate(320deg) brightness(0.55);
