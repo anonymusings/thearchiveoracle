@@ -1230,8 +1230,8 @@
       position: absolute;
       bottom: 5.5rem;
       right: 1.5rem;
-      width: 50px;
-      height: 50px;
+      width: 44px;
+      height: 44px;
       background: transparent;
       border: none;
       border-radius: 0;
@@ -1239,7 +1239,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: box-shadow 0.2s;
+      transition: filter 0.2s, transform 0.2s;
       z-index: 200;
     }
 
@@ -1248,8 +1248,13 @@
       transform: scale(1.1);
     }
 
-    .sidebar-settings-btn.active {
-      background: var(--crimson-glow);
+    .sidebar-settings-btn.active,
+    .sidebar-settings-btn:active,
+    .sidebar-settings-btn:focus {
+      background: transparent;
+      outline: none;
+      box-shadow: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .sidebar-settings-btn svg {
