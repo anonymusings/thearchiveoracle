@@ -460,8 +460,6 @@
       flex-wrap: wrap;
     }
 
-    .page-header-left {}
-
     .page-eyebrow {
       font-family: var(--font-display);
       font-size: 0.6rem;
@@ -604,6 +602,7 @@
       line-height: 1.3;
       display: -webkit-box;
       -webkit-line-clamp: 2;
+      line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
@@ -625,6 +624,7 @@
       opacity: 0.6;
       display: -webkit-box;
       -webkit-line-clamp: 1;
+      line-clamp: 1;
       -webkit-box-orient: vertical;
       overflow: hidden;
       margin-bottom: 1rem;
@@ -657,6 +657,7 @@
       line-height: 1.6;
       display: -webkit-box;
       -webkit-line-clamp: 3;
+      line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
       margin-bottom: 1.25rem;
@@ -1224,6 +1225,198 @@
        READER CONTROLS DIALOG
     ═══════════════════════════════════════════ */
 
+    /* Settings Button */
+    .sidebar-settings-btn {
+      position: absolute;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      width: 44px;
+      height: 44px;
+      background: var(--crimson);
+      border: none;
+      border-radius: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: box-shadow 0.2s;
+      z-index: 200;
+    }
+
+    .sidebar-settings-btn:hover {
+      box-shadow: 0 0 12px var(--crimson-glow);
+    }
+
+    .sidebar-settings-btn.active {
+      background: var(--crimson-glow);
+    }
+
+    .settings-icon {
+      width: 24px;
+      height: 24px;
+      filter: brightness(0) invert(1);
+    }
+
+    .sidebar-settings-btn:hover .settings-icon,
+    .sidebar-settings-btn.active .settings-icon {
+      filter: brightness(0) saturate(100%) invert(79%) sepia(13%) saturate(1015%) hue-rotate(337deg) brightness(93%) contrast(87%);
+    }
+
+    /* Settings Dialog */
+    .settings-dialog {
+      position: absolute;
+      bottom: 5rem;
+      right: 1.5rem;
+      width: 240px;
+      background: var(--smoke-light);
+      border: 1px solid rgba(111, 31, 30, 0.5);
+      border-radius: 0;
+      padding: 1rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      z-index: 250;
+    }
+
+    .settings-section {
+      margin-bottom: 1rem;
+    }
+
+    .settings-section:last-of-type {
+      margin-bottom: 0.75rem;
+    }
+
+    .settings-label {
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ash-light);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .settings-control {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .settings-btn {
+      flex: 1;
+      background: rgba(111, 31, 30, 0.3);
+      border: 1px solid rgba(111, 31, 30, 0.5);
+      border-radius: 0;
+      color: var(--vellum);
+      padding: 0.5rem;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .settings-btn:hover {
+      background: var(--crimson);
+      box-shadow: 0 0 8px var(--crimson-glow);
+    }
+
+    .theme-selector {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .theme-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--ash);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .theme-circle:hover {
+      border-color: var(--crimson-pale);
+    }
+
+    .theme-circle.selected {
+      box-shadow: 0 0 0 2px var(--crimson);
+    }
+
+    .restore-link {
+      display: block;
+      text-align: center;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--crimson-pale);
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 0.75rem;
+    }
+
+    .restore-link:hover {
+      color: var(--white);
+    }
+
+    /* Confirmation Dialog */
+    .confirmation-dialog {
+      position: absolute;
+      bottom: 5rem;
+      right: 1.5rem;
+      width: 240px;
+      background: var(--smoke-light);
+      border: 1px solid rgba(111, 31, 30, 0.5);
+      border-radius: 0;
+      padding: 1rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      z-index: 251;
+    }
+
+    .confirmation-text {
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--vellum);
+      text-align: center;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .confirmation-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .confirm-btn,
+    .cancel-btn {
+      flex: 1;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 0;
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .confirm-btn {
+      background: var(--crimson);
+      color: var(--white);
+    }
+
+    .confirm-btn:hover {
+      background: var(--crimson-glow);
+      box-shadow: 0 0 8px var(--crimson-glow);
+    }
+
+    .cancel-btn {
+      background: rgba(111, 31, 30, 0.3);
+      border: 1px solid rgba(111, 31, 30, 0.5);
+      color: var(--vellum);
+    }
+
+    .cancel-btn:hover {
+      background: rgba(111, 31, 30, 0.5);
+    }
+
     /* ═══════════════════════════════════════════
    EMPTY / LOADING STATES
 ═══════════════════════════════════════════ */
@@ -1605,6 +1798,50 @@
           </div>
         </div>
 
+        <!-- Settings Button -->
+        <button id="settings-button" class="sidebar-settings-btn">
+          <img src="icons copy/2.svg" alt="Settings" class="settings-icon" />
+        </button>
+
+        <!-- Settings Dialog -->
+        <div id="settings-dialog" class="settings-dialog" style="display: none;">
+          <div class="settings-section">
+            <label class="settings-label">Font Size</label>
+            <div class="settings-control">
+              <button class="settings-btn" id="font-decrease">Aa-</button>
+              <button class="settings-btn" id="font-increase">Aa+</button>
+            </div>
+          </div>
+          
+          <div class="settings-section">
+            <label class="settings-label">Line Spacing</label>
+            <div class="settings-control">
+              <button class="settings-btn" id="spacing-decrease">-</button>
+              <button class="settings-btn" id="spacing-increase">+</button>
+            </div>
+          </div>
+          
+          <div class="settings-section">
+            <label class="settings-label">Theme</label>
+            <div class="theme-selector">
+              <div class="theme-circle" data-theme="white" style="background: #FFFFFF;"></div>
+              <div class="theme-circle" data-theme="black" style="background: #000000;"></div>
+              <div class="theme-circle" data-theme="beige" style="background: #F2EADE;"></div>
+            </div>
+          </div>
+          
+          <a href="#" class="restore-link" id="restore-defaults">Restore default</a>
+        </div>
+
+        <!-- Confirmation Dialog -->
+        <div id="confirmation-dialog" class="confirmation-dialog" style="display: none;">
+          <p class="confirmation-text">Restore all settings to default values?</p>
+          <div class="confirmation-buttons">
+            <button class="confirm-btn" id="confirm-restore">Restore</button>
+            <button class="cancel-btn" id="cancel-restore">Cancel</button>
+          </div>
+        </div>
+
       </div>
 
       <!-- Main reading area -->
@@ -1652,6 +1889,123 @@
         'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
       // ═══════════════════════════════════════════
+      // SETTINGS PANEL INITIALIZATION
+      // ═══════════════════════════════════════════
+      
+      /**
+       * Initialize the settings panel with saved settings and event listeners
+       * This function is called on DOMContentLoaded to set up the entire settings panel
+       */
+      function initializeSettingsPanel() {
+        // Step 1: Load saved settings from cookies
+        const settings = loadSettingsFromCookies();
+        
+        // Step 2: Update global state with loaded settings
+        readerFontSize = settings.fontSize;
+        readerLineHeight = settings.lineHeight;
+        readerTheme = settings.theme;
+        
+        // Step 3: Apply loaded settings to content area (if it exists)
+        // Note: This will be applied when reader opens, but we set the global state now
+        const chapter = document.querySelector('.epub-chapter');
+        if (chapter) {
+          applyReaderStyles(settings);
+        }
+        
+        // Step 4: Attach all event listeners
+        
+        // Settings button toggle
+        const settingsButton = document.getElementById('settings-button');
+        if (settingsButton) {
+          settingsButton.addEventListener('click', toggleSettingsDialog);
+        }
+        
+        // Font size buttons
+        const fontIncreaseBtn = document.getElementById('font-increase');
+        const fontDecreaseBtn = document.getElementById('font-decrease');
+        
+        if (fontIncreaseBtn) {
+          fontIncreaseBtn.addEventListener('click', () => adjustFontSize(5));
+        }
+        
+        if (fontDecreaseBtn) {
+          fontDecreaseBtn.addEventListener('click', () => adjustFontSize(-5));
+        }
+        
+        // Line spacing buttons
+        const spacingIncreaseBtn = document.getElementById('spacing-increase');
+        const spacingDecreaseBtn = document.getElementById('spacing-decrease');
+        
+        if (spacingIncreaseBtn) {
+          spacingIncreaseBtn.addEventListener('click', () => adjustLineHeight(0.5));
+        }
+        
+        if (spacingDecreaseBtn) {
+          spacingDecreaseBtn.addEventListener('click', () => adjustLineHeight(-0.5));
+        }
+        
+        // Theme circles
+        const themeCircles = document.querySelectorAll('.theme-circle');
+        
+        themeCircles.forEach(circle => {
+          circle.addEventListener('click', () => {
+            const theme = circle.getAttribute('data-theme');
+            if (theme) {
+              setTheme(theme);
+            }
+          });
+        });
+        
+        // Restore defaults link
+        const restoreDefaultsLink = document.getElementById('restore-defaults');
+        if (restoreDefaultsLink) {
+          restoreDefaultsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showConfirmationDialog();
+          });
+        }
+        
+        // Confirmation dialog buttons
+        const confirmRestoreBtn = document.getElementById('confirm-restore');
+        if (confirmRestoreBtn) {
+          confirmRestoreBtn.addEventListener('click', () => {
+            restoreDefaults();
+          });
+        }
+        
+        const cancelRestoreBtn = document.getElementById('cancel-restore');
+        if (cancelRestoreBtn) {
+          cancelRestoreBtn.addEventListener('click', () => {
+            hideConfirmationDialog();
+          });
+        }
+        
+        // Step 5: Verify all DOM elements exist (log warnings if missing)
+        const requiredElements = [
+          'settings-button',
+          'settings-dialog',
+          'confirmation-dialog',
+          'font-increase',
+          'font-decrease',
+          'spacing-increase',
+          'spacing-decrease',
+          'restore-defaults',
+          'confirm-restore',
+          'cancel-restore'
+        ];
+        
+        requiredElements.forEach(id => {
+          if (!document.getElementById(id)) {
+            console.warn(`Settings panel element not found: ${id}`);
+          }
+        });
+        
+        if (document.querySelectorAll('.theme-circle').length === 0) {
+          console.warn('No theme circles found in settings panel');
+        }
+      }
+
+      // ═══════════════════════════════════════════
       // INIT — read URL params from bot deep link
       // ═══════════════════════════════════════════
       window.addEventListener('DOMContentLoaded', () => {
@@ -1691,6 +2045,9 @@
         } else {
           showPage('home');
         }
+
+        // Initialize settings panel
+        initializeSettingsPanel();
       });
 
       // ═══════════════════════════════════════════
@@ -2228,6 +2585,10 @@
         });
 
         document.getElementById('reader-main').scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Reapply reader settings after chapter content is rendered
+        // This ensures settings persist across chapter navigation
+        applyReaderStyles();
       }
 
       function goToChapter(idx) { renderChapter(idx); }
@@ -2253,6 +2614,293 @@
         } else {
           // Hamburger
           toggleBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+        }
+      }
+
+      // Cookie utility functions
+      
+      // Set cookie with expiration
+      function setCookie(name, value, days) {
+        try {
+          const expires = new Date(Date.now() + days * 864e5).toUTCString();
+          document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+        } catch (error) {
+          console.warn('Failed to save setting to cookies:', error);
+        }
+      }
+      
+      // Get cookie value by name
+      function getCookie(name) {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.startsWith(name + '=')) {
+            return cookie.substring(name.length + 1);
+          }
+        }
+        return '';
+      }
+      
+      // Delete cookie by setting expiration to past date
+      function deleteCookie(name) {
+        try {
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
+        } catch (error) {
+          console.warn('Failed to delete cookie:', error);
+        }
+      }
+
+      // Load settings from cookies
+      function loadSettingsFromCookies() {
+        // Default settings
+        const DEFAULT_SETTINGS = {
+          fontSize: 100,
+          lineHeight: 1.85,
+          theme: 'white'
+        };
+
+        // Read and validate fontSize
+        let fontSize = parseInt(getCookie('readerFontSize'));
+        if (isNaN(fontSize) || fontSize < 30 || fontSize > 200) {
+          fontSize = DEFAULT_SETTINGS.fontSize;
+        }
+
+        // Read and validate lineHeight
+        let lineHeight = parseFloat(getCookie('readerLineHeight'));
+        if (isNaN(lineHeight) || lineHeight < 0.5 || lineHeight > 3.0) {
+          lineHeight = DEFAULT_SETTINGS.lineHeight;
+        }
+
+        // Read and validate theme
+        let theme = getCookie('readerTheme');
+        if (!['white', 'black', 'beige'].includes(theme)) {
+          theme = DEFAULT_SETTINGS.theme;
+        }
+
+        return { fontSize, lineHeight, theme };
+      }
+
+      // Toggle settings dialog
+      function toggleSettingsDialog() {
+        const settingsBtn = document.getElementById('settings-button');
+        const settingsDialog = document.getElementById('settings-dialog');
+        const confirmationDialog = document.getElementById('confirmation-dialog');
+        const settingsIcon = settingsBtn.querySelector('.settings-icon');
+        
+        // Toggle dialog visibility
+        if (settingsDialog.style.display === 'none') {
+          // Open dialog
+          settingsDialog.style.display = 'block';
+          settingsBtn.classList.add('active');
+          settingsIcon.src = 'icons copy/1.svg';
+        } else {
+          // Close dialog
+          settingsDialog.style.display = 'none';
+          settingsBtn.classList.remove('active');
+          settingsIcon.src = 'icons copy/2.svg';
+          
+          // Close confirmation dialog if open
+          if (confirmationDialog) {
+            confirmationDialog.style.display = 'none';
+          }
+        }
+      }
+
+      // Adjust font size
+      function adjustFontSize(delta) {
+        // Debounce rapid button clicks
+        if (isAdjusting) return;
+        isAdjusting = true;
+
+        // Calculate new font size and clamp to [30, 200]
+        let newFontSize = readerFontSize + delta;
+        
+        if (newFontSize < 30) {
+          newFontSize = 30;
+        }
+        
+        if (newFontSize > 200) {
+          newFontSize = 200;
+        }
+        
+        // Update global state
+        readerFontSize = newFontSize;
+        
+        // Apply to .epub-chapter element
+        const chapter = document.querySelector('.epub-chapter');
+        if (!chapter) {
+          console.error('Reader content area not found');
+          isAdjusting = false;
+          return;
+        }
+        
+        const baseFontSize = 1.05;
+        const actualSize = (baseFontSize * readerFontSize / 100).toFixed(2);
+        chapter.style.fontSize = actualSize + 'rem';
+        
+        // Save to readerFontSize cookie (365 days expiration)
+        setCookie('readerFontSize', readerFontSize, 365);
+
+        // Reset debouncing flag after 100ms
+        setTimeout(() => { isAdjusting = false; }, 100);
+      }
+
+      // Adjust line height
+      function adjustLineHeight(delta) {
+        // Debounce rapid button clicks
+        if (isAdjusting) return;
+        isAdjusting = true;
+
+        // Calculate new line height and clamp to [0.5, 3.0]
+        let newLineHeight = readerLineHeight + delta;
+        
+        if (newLineHeight < 0.5) {
+          newLineHeight = 0.5;
+        }
+        
+        if (newLineHeight > 3.0) {
+          newLineHeight = 3.0;
+        }
+        
+        // Update global state
+        readerLineHeight = newLineHeight;
+        
+        // Apply to .epub-chapter element
+        const chapter = document.querySelector('.epub-chapter');
+        if (!chapter) {
+          console.error('Reader content area not found');
+          isAdjusting = false;
+          return;
+        }
+        
+        chapter.style.lineHeight = readerLineHeight;
+        
+        // Save to readerLineHeight cookie (365 days expiration)
+        setCookie('readerLineHeight', readerLineHeight, 365);
+
+        // Reset debouncing flag after 100ms
+        setTimeout(() => { isAdjusting = false; }, 100);
+      }
+
+      // Set theme
+      function setTheme(themeName) {
+        // Validate theme name
+        if (!['white', 'black', 'beige'].includes(themeName)) {
+          console.error('Invalid theme name:', themeName);
+          return;
+        }
+        
+        // Get theme colors from configuration
+        const themeConfig = THEME_COLORS[themeName];
+        
+        // Apply background color to #reader-main
+        const readerMain = document.getElementById('reader-main');
+        if (!readerMain) {
+          console.error('Reader main element not found');
+          return;
+        }
+        readerMain.style.background = themeConfig.background;
+        
+        // Apply text color to .epub-chapter
+        const chapter = document.querySelector('.epub-chapter');
+        if (!chapter) {
+          console.error('Reader content area not found');
+          return;
+        }
+        chapter.style.color = themeConfig.text;
+        
+        // Update visual selection indicator on theme circles
+        const themeCircles = document.querySelectorAll('.theme-circle');
+        themeCircles.forEach(circle => {
+          if (circle.dataset.theme === themeName) {
+            circle.style.boxShadow = '0 0 0 2px var(--crimson)';
+          } else {
+            circle.style.boxShadow = 'none';
+          }
+        });
+        
+        // Update global state
+        readerTheme = themeName;
+        
+        // Save to readerTheme cookie (365 days expiration)
+        setCookie('readerTheme', themeName, 365);
+      }
+
+      // Show confirmation dialog
+      function showConfirmationDialog() {
+        const settingsDialog = document.getElementById('settings-dialog');
+        const confirmationDialog = document.getElementById('confirmation-dialog');
+        
+        // Hide settings dialog
+        if (settingsDialog) {
+          settingsDialog.style.display = 'none';
+        }
+        
+        // Show confirmation dialog
+        if (confirmationDialog) {
+          confirmationDialog.style.display = 'block';
+        }
+      }
+
+      // Hide confirmation dialog
+      function hideConfirmationDialog() {
+        const settingsDialog = document.getElementById('settings-dialog');
+        const confirmationDialog = document.getElementById('confirmation-dialog');
+        
+        // Hide confirmation dialog
+        if (confirmationDialog) {
+          confirmationDialog.style.display = 'none';
+        }
+        
+        // Show settings dialog
+        if (settingsDialog) {
+          settingsDialog.style.display = 'block';
+        }
+      }
+
+      // Restore defaults
+      function restoreDefaults() {
+        // Default settings
+        const DEFAULT_SETTINGS = {
+          fontSize: 100,
+          lineHeight: 1.85,
+          theme: 'white'
+        };
+        
+        // Reset font size
+        readerFontSize = DEFAULT_SETTINGS.fontSize;
+        const chapter = document.querySelector('.epub-chapter');
+        if (chapter) {
+          const baseFontSize = 1.05;
+          const actualSize = (baseFontSize * readerFontSize / 100).toFixed(2);
+          chapter.style.fontSize = actualSize + 'rem';
+        }
+        
+        // Reset line height
+        readerLineHeight = DEFAULT_SETTINGS.lineHeight;
+        if (chapter) {
+          chapter.style.lineHeight = readerLineHeight;
+        }
+        
+        // Reset theme
+        readerTheme = DEFAULT_SETTINGS.theme;
+        setTheme(readerTheme);
+        
+        // Delete all setting cookies
+        deleteCookie('readerFontSize');
+        deleteCookie('readerLineHeight');
+        deleteCookie('readerTheme');
+        
+        // Close confirmation dialog
+        const confirmationDialog = document.getElementById('confirmation-dialog');
+        if (confirmationDialog) {
+          confirmationDialog.style.display = 'none';
+        }
+        
+        // Keep settings dialog open
+        const settingsDialog = document.getElementById('settings-dialog');
+        if (settingsDialog) {
+          settingsDialog.style.display = 'block';
         }
       }
 
@@ -2302,39 +2950,55 @@
       // Reader settings state
       let readerFontSize = 100;
       let readerLineHeight = 1.85;
-      let readerTheme = 'light';
+      let readerTheme = 'white';
       let lastScrollY = 0;
+
+      // Debouncing flag for rapid button clicks
+      let isAdjusting = false;
+
+      // Theme colors configuration
+      const THEME_COLORS = {
+        white: { background: '#FFFFFF', text: '#1a1a1a' },
+        black: { background: '#000000', text: '#d4c4ad' },
+        beige: { background: '#F2EADE', text: '#2a1e18' }
+      };
 
 
 
       // Apply reader styles to content
-      function applyReaderStyles() {
+      function applyReaderStyles(settings) {
+        // If no settings provided, use current global state
+        if (!settings) {
+          settings = {
+            fontSize: readerFontSize,
+            lineHeight: readerLineHeight,
+            theme: readerTheme
+          };
+        }
+
         const chapter = document.querySelector('.epub-chapter');
-        if (!chapter) return;
-
-        const baseFontSize = 1.05;
-        const actualSize = (baseFontSize * readerFontSize / 100).toFixed(2);
-
-        chapter.style.fontSize = actualSize + 'rem';
-        chapter.style.lineHeight = readerLineHeight;
-
         const readerMain = document.getElementById('reader-main');
 
-        // Theme colors per user request
-        // Light: #F2EADE
-        // Sepia (White): #FFFFFF
-        // Dark: #000000
-
-        if (readerTheme === 'sepia') {
-          readerMain.style.background = '#FFFFFF';
-          chapter.style.color = '#1a1a1a'; // Dark grey for contrast on white
-        } else if (readerTheme === 'dark') {
-          readerMain.style.background = '#000000';
-          chapter.style.color = '#d4c4ad'; // Pale vellum for contrast on black
-        } else {
-          readerMain.style.background = '#F2EADE';
-          chapter.style.color = '#2a1e18';
+        // Handle missing DOM elements gracefully
+        if (!chapter || !readerMain) {
+          console.error('Reader content area not found');
+          return;
         }
+
+        // Batch DOM updates using requestAnimationFrame
+        requestAnimationFrame(() => {
+          const baseFontSize = 1.05;
+          const actualSize = (baseFontSize * settings.fontSize / 100).toFixed(2);
+
+          // Apply all settings to .epub-chapter
+          chapter.style.fontSize = actualSize + 'rem';
+          chapter.style.lineHeight = settings.lineHeight.toString();
+
+          // Apply theme colors from THEME_COLORS configuration
+          const themeConfig = THEME_COLORS[settings.theme] || THEME_COLORS['white'];
+          readerMain.style.background = themeConfig.background;
+          chapter.style.color = themeConfig.text;
+        });
       }
 
       // Header hide/show on scroll in reader mode
