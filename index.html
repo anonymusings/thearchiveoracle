@@ -2361,6 +2361,18 @@
           const arrayBuffer = await fetchProxiedFile(url);
           pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 
+          // Extract title from PDF metadata and backfill if still Untitled
+          try {
+            const pdfMeta = await pdfDoc.getMetadata();
+            const pdfTitle = pdfMeta && pdfMeta.info && pdfMeta.info.Title;
+            if (pdfTitle && pdfTitle.trim() &&
+                (!currentFic.title || currentFic.title === 'Untitled')) {
+              currentFic.title = pdfTitle.trim();
+              saveLibraryToStorage();
+              document.getElementById('sidebar-title').innerText = currentFic.title;
+            }
+          } catch(e) { /* metadata unavailable, continue */ }
+
           // Build TOC from PDF outline if available
           const outline = await pdfDoc.getOutline();
           buildPdfToc(outline, pdfDoc.numPages);
@@ -2496,6 +2508,22 @@
               const href = manifest[ref.getAttribute('idref')];
               if (href) spineFiles.push(href);
             });
+
+            // Extract dc:title and dc:creator and backfill if still Untitled
+            const dcTitle = opfDoc.querySelector('title, dc\\:title, [*|title]');
+            const dcCreator = opfDoc.querySelector('creator, dc\\:creator, [*|creator]');
+            if (dcTitle && dcTitle.textContent.trim() &&
+                (!currentFic.title || currentFic.title === 'Untitled')) {
+              currentFic.title = dcTitle.textContent.trim();
+              saveLibraryToStorage();
+              document.getElementById('sidebar-title').innerText = currentFic.title;
+            }
+            if (dcCreator && dcCreator.textContent.trim() &&
+                (!currentFic.author || currentFic.author === '' || currentFic.author === 'N/A')) {
+              currentFic.author = dcCreator.textContent.trim();
+              saveLibraryToStorage();
+              document.getElementById('sidebar-author').innerText = 'by ' + currentFic.author;
+            }
           }
 
           if (spineFiles.length === 0) {
