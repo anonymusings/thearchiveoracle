@@ -1087,6 +1087,162 @@
       font-style: italic;
     }
 
+
+    /* ── Phase 4: Image scaling fixes ─────────────────── */
+    .epub-chapter img {
+      max-width: 100% !important; width: auto !important; height: auto !important;
+      display: block !important; margin: 1rem auto !important; object-fit: contain !important;
+    }
+    .epub-chapter img[height] { max-height: 100vh !important; }
+
+    /* ── Highlight marks ──────────────────────────────── */
+    .epub-chapter mark {
+      border-radius: 2px; padding: 1px 0; cursor: pointer; transition: opacity 0.15s;
+    }
+    .epub-chapter mark:hover { opacity: 0.8; }
+    .epub-chapter mark[data-color="#a40606"] { background:#a40606; color:#fff; }
+    .epub-chapter mark[data-color="#a46318"] { background:#a46318; color:#fff; }
+    .epub-chapter mark[data-color="#c28686"] { background:#c28686; color:#2a1a10; }
+    .epub-chapter mark[data-color="#8d9f72"] { background:#8d9f72; color:#1a2010; }
+    .epub-chapter mark[data-color="#6d5c5c"] { background:#6d5c5c; color:#fff; }
+
+    /* ── Bookmark ribbon ──────────────────────────────── */
+    #bookmark-ribbon-btn {
+      position: fixed; top: 5rem; right: 0; z-index: 300;
+      width: 36px; height: 64px;
+      background: var(--maroon, #8B2035); border: none;
+      border-radius: 4px 0 0 4px; cursor: pointer;
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center; gap: 3px;
+      box-shadow: -2px 2px 8px rgba(0,0,0,0.3);
+      transition: background 0.2s, transform 0.2s; padding: 0;
+    }
+    #bookmark-ribbon-btn:hover { background:#a83048; transform:translateX(-3px); }
+    #bookmark-ribbon-btn .ribbon-icon { color:#f5e6d0; font-size:18px; line-height:1; }
+    #bookmark-ribbon-btn .ribbon-count { font-size:9px; color:rgba(245,230,208,0.7); letter-spacing:0.05em; }
+    #page-reader.active #bookmark-ribbon-btn { display: flex; }
+
+    /* ── Text selection popup ─────────────────────────── */
+    #selection-popup {
+      position:fixed; z-index:600; background:#1e1008;
+      border:1px solid rgba(139,32,53,0.5); border-radius:4px;
+      box-shadow:0 4px 16px rgba(0,0,0,0.4);
+      display:none; flex-direction:column; overflow:hidden; min-width:130px;
+    }
+    #selection-popup.show { display:flex; }
+    .sel-btn {
+      background:none; border:none; color:#f0e4d0;
+      font-family:"Crimson Pro",serif; font-size:0.9rem;
+      padding:0.55rem 1rem; text-align:left; cursor:pointer;
+      display:flex; align-items:center; gap:0.5rem;
+      transition:background 0.15s; white-space:nowrap;
+    }
+    .sel-btn:hover { background:rgba(139,32,53,0.35); }
+    .sel-btn+.sel-btn { border-top:1px solid rgba(139,32,53,0.2); }
+    #color-picker-row {
+      display:none; gap:7px; padding:0.5rem 1rem;
+      border-top:1px solid rgba(139,32,53,0.2); align-items:center;
+    }
+    #color-picker-row.show { display:flex; }
+    .color-swatch {
+      width:22px; height:22px; border-radius:50%;
+      border:2px solid transparent; cursor:pointer;
+      transition:transform 0.15s, border-color 0.15s; flex-shrink:0;
+    }
+    .color-swatch:hover { transform:scale(1.2); border-color:rgba(255,255,255,0.5); }
+    .color-swatch.active { border-color:#fff; transform:scale(1.15); }
+
+    /* ── Bookmarks / Highlights / Notes modal ─────────── */
+    #bhn-modal-overlay {
+      position:fixed; inset:0; z-index:500;
+      background:rgba(10,4,2,0.65); display:none;
+      align-items:flex-end; justify-content:center;
+    }
+    #bhn-modal-overlay.show { display:flex; }
+    #bhn-modal {
+      background:#130804; border:1px solid rgba(139,32,53,0.4); border-bottom:none;
+      border-radius:8px 8px 0 0; width:100%; max-width:720px; max-height:72vh;
+      display:flex; flex-direction:column;
+      box-shadow:0 -8px 32px rgba(0,0,0,0.55);
+      animation:bhnSlideUp 0.25s ease-out;
+    }
+    @keyframes bhnSlideUp { from{transform:translateY(100%);opacity:0} to{transform:translateY(0);opacity:1} }
+    .bhn-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0.9rem 1.25rem 0; flex-shrink:0;
+    }
+    .bhn-title { font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:#6a4a3a; }
+    .bhn-close {
+      background:none; border:none; color:#6a4a3a; cursor:pointer;
+      font-size:1.3rem; line-height:1; padding:0 4px; transition:color 0.15s;
+    }
+    .bhn-close:hover { color:#f0d8c0; }
+    .bhn-tabs {
+      display:flex; border-bottom:1px solid rgba(139,32,53,0.2);
+      flex-shrink:0; padding:0 1.25rem; margin-top:0.6rem;
+    }
+    .bhn-tab {
+      background:none; border:none; color:#6a4a3a;
+      font-family:"Cinzel Decorative",serif; font-size:0.52rem;
+      letter-spacing:0.12em; text-transform:uppercase;
+      padding:0.45rem 0.9rem 0.55rem; cursor:pointer;
+      border-bottom:2px solid transparent; margin-bottom:-1px;
+      transition:color 0.15s, border-color 0.15s;
+    }
+    .bhn-tab.active { color:#f0d8c0; border-bottom-color:#8B2035; }
+    .bhn-tab:hover:not(.active) { color:#c4a07a; }
+    .bhn-body { flex:1; overflow-y:auto; padding:0.9rem 1.25rem 1.5rem; }
+    .bhn-empty {
+      text-align:center; padding:2.5rem 1rem; color:#4a3020;
+      font-style:italic; font-family:"Crimson Pro",serif; font-size:0.92rem;
+    }
+    .bhn-item {
+      border:1px solid rgba(139,32,53,0.18); border-radius:3px;
+      padding:0.7rem 2rem 0.7rem 0.9rem; margin-bottom:0.5rem;
+      cursor:pointer; transition:background 0.15s; position:relative;
+    }
+    .bhn-item:hover { background:rgba(139,32,53,0.1); border-color:rgba(139,32,53,0.38); }
+    .bhn-item-title { font-family:"Crimson Pro",serif; font-size:0.88rem; color:#f0d8c0; margin-bottom:0.15rem; }
+    .bhn-item-meta { font-family:"Crimson Pro",serif; font-size:0.76rem; color:#5a3a28; font-style:italic; }
+    .bhn-item-quote {
+      font-family:"Crimson Pro",serif; font-size:0.86rem; color:#c4a07a;
+      font-style:italic; margin:0.25rem 0;
+      padding-left:0.7rem; border-left:2px solid;
+    }
+    .bhn-item-note { font-family:"Crimson Pro",serif; font-size:0.8rem; color:#7a6050; margin-top:0.25rem; }
+    .bhn-item-del {
+      position:absolute; top:0.45rem; right:0.45rem;
+      background:none; border:none; color:#3a1a10; cursor:pointer;
+      font-size:0.95rem; transition:color 0.15s; padding:2px 5px;
+    }
+    .bhn-item-del:hover { color:#c43030; }
+    .bhn-color-dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:4px; vertical-align:middle; }
+
+    /* ── Quick note popup ─────────────────────────────── */
+    #note-popup {
+      position:fixed; z-index:650; background:#1e1008;
+      border:1px solid rgba(139,32,53,0.5); border-radius:4px;
+      box-shadow:0 4px 16px rgba(0,0,0,0.45);
+      display:none; flex-direction:column; width:264px; padding:0.7rem; gap:0.45rem;
+    }
+    #note-popup.show { display:flex; }
+    #note-popup textarea {
+      width:100%; background:rgba(255,255,255,0.05);
+      border:1px solid rgba(139,32,53,0.3); border-radius:3px;
+      color:#f0d8c0; font-family:"Crimson Pro",serif; font-size:0.88rem;
+      padding:0.4rem 0.6rem; resize:none; height:72px; outline:none; box-sizing:border-box;
+    }
+    #note-popup textarea:focus { border-color:rgba(139,32,53,0.65); }
+    .note-popup-btns { display:flex; gap:0.4rem; justify-content:flex-end; }
+    .note-popup-btns button {
+      background:rgba(139,32,53,0.25); border:1px solid rgba(139,32,53,0.4);
+      border-radius:2px; color:#f0d8c0; font-family:"Crimson Pro",serif;
+      font-size:0.82rem; padding:0.28rem 0.7rem; cursor:pointer; transition:background 0.15s;
+    }
+    .note-popup-btns button:hover { background:rgba(139,32,53,0.5); }
+    .note-popup-btns .np-cancel { background:none; border-color:rgba(255,255,255,0.08); color:#5a3a28; }
+    .note-popup-btns .np-cancel:hover { color:#c4a07a; background:none; }
+
     /* PDF canvas wrapper */
     #pdf-canvas-wrapper {
       display: flex;
@@ -1701,7 +1857,7 @@
     <div class="hero">
       <div class="hero-bg"></div>
       <div class="hero-title">The Archive<br>Oracle</div>
-      <div class="hero-ornament">✦ ✦ ✦</div>
+      <div class="hero-ornament">𓆝 𓆟 𓆞 𓆝 𓆟</div>
       <p class="hero-desc">"Close your eyes, can keep your mind wide open."<br><span class="hero-attribution">—
           Katherine Paterson</span></p>
       <div class="hero-actions">
@@ -1871,6 +2027,55 @@
         </svg>
       </button>
 
+
+      <!-- Phase 4: Bookmark ribbon button -->
+      <button id="bookmark-ribbon-btn" onclick="openBhnModal('bookmarks')" title="Bookmarks & Highlights">
+        <span class="ribbon-icon">🔖</span>
+        <span class="ribbon-count" id="ribbon-count"></span>
+      </button>
+
+    </div><!-- /reader-layout -->
+
+    <!-- Phase 4: BHN modal overlay -->
+    <div id="bhn-modal-overlay" onclick="if(event.target===this)closeBhnModal()">
+      <div id="bhn-modal">
+        <div class="bhn-header">
+          <span class="bhn-title">Oracle Notes</span>
+          <button class="bhn-close" onclick="closeBhnModal()">&#x2715;</button>
+        </div>
+        <div class="bhn-tabs">
+          <button class="bhn-tab active" id="tab-bookmarks"   onclick="switchBhnTab('bookmarks')">Bookmarks</button>
+          <button class="bhn-tab"        id="tab-highlights"  onclick="switchBhnTab('highlights')">Highlights</button>
+          <button class="bhn-tab"        id="tab-notes"       onclick="switchBhnTab('notes')">Notes</button>
+        </div>
+        <div class="bhn-body" id="bhn-body"></div>
+      </div>
+    </div>
+
+    <!-- Phase 4: Text selection popup -->
+    <div id="selection-popup">
+      <button class="sel-btn" id="sel-highlight-btn" onclick="showColorPicker()">
+        <span>&#x2590;</span> Highlight
+      </button>
+      <button class="sel-btn" id="sel-note-btn" onclick="selAddNote()">
+        <span>&#x270E;</span> Add Note
+      </button>
+      <div id="color-picker-row">
+        <span class="color-swatch" style="background:#a40606" data-color="#a40606" onclick="applyHighlight('#a40606')" title="Crimson"></span>
+        <span class="color-swatch" style="background:#a46318" data-color="#a46318" onclick="applyHighlight('#a46318')" title="Bronze"></span>
+        <span class="color-swatch" style="background:#c28686" data-color="#c28686" onclick="applyHighlight('#c28686')" title="Rose"></span>
+        <span class="color-swatch" style="background:#8d9f72" data-color="#8d9f72" onclick="applyHighlight('#8d9f72')" title="Sage"></span>
+        <span class="color-swatch" style="background:#6d5c5c" data-color="#6d5c5c" onclick="applyHighlight('#6d5c5c')" title="Ash"></span>
+      </div>
+    </div>
+
+    <!-- Phase 4: Quick note popup -->
+    <div id="note-popup">
+      <textarea id="note-popup-text" placeholder="Add a note…"></textarea>
+      <div class="note-popup-btns">
+        <button class="np-cancel" onclick="closeNotePopup()">Cancel</button>
+        <button onclick="saveNotePopup()">Save</button>
+      </div>
     </div>
 
     <!-- Toast -->
@@ -1881,7 +2086,9 @@
       // STATE
       // ═══════════════════════════════════════════
       // IMPORTANT: Replace this with your Google Apps Script web app URL
-      const PROXY_URL = 'https://script.google.com/macros/s/AKfycbxEz_tDrAIhpIIp-2gc32mD4-V4PF-dd_MaBSbvbTGjnyGyqTNUSIBv_OvN_k6P2VGn/exec';
+      // Phase 2: File requests now go to the FastAPI /file endpoint on the same origin.
+      // SERVER_URL is injected at deploy time; in development set it to http://localhost:8080
+      const SERVER_URL = window.ORACLE_SERVER_URL || window.location.origin;
 
       let library = [];       // array of fic metadata objects
       let currentFic = null;  // currently open fic
@@ -2024,11 +2231,10 @@
         const extParam = params.get('ext') || 'pdf';
 
         if (fileParam) {
-          // Came from bot button — decode and open immediately
+          // Came from bot "Open Oracle" button — file param is a Telegram file_id
           try {
-            const telegramFileUrl = atob(fileParam);
-            // Route through our CORS proxy with mode=read for base64 encoding
-            const proxiedUrl = `${PROXY_URL}?file=${encodeURIComponent(telegramFileUrl)}&mode=read`;
+            // Build URL to our /file endpoint (same origin)
+            const proxiedUrl = `${SERVER_URL}/file?file_id=${encodeURIComponent(fileParam)}&user_id=${params.get('user_id') || ''}`;
 
             const fic = {
               id: Date.now(),
@@ -2103,23 +2309,20 @@
         try {
           if (!url) return 'Untitled';
           const urlObj = new URL(url);
-          const fileParam = urlObj.searchParams.get('file');
 
-          let filename = '';
-          if (fileParam) {
-            // Proxy URL: Decode base64 telegram URL
-            const decoded = atob(fileParam);
-            filename = decoded.split('/').pop().split('?')[0];
-          } else {
-            filename = urlObj.pathname.split('/').pop();
+          // Phase 2: URL params may include title directly
+          const titleParam = urlObj.searchParams.get('title');
+          if (titleParam && titleParam !== 'undefined') {
+            return decodeURIComponent(titleParam).replace(/[_-]/g, ' ').trim() || 'Untitled';
           }
 
+          // Fallback: derive from pathname
+          const filename = urlObj.pathname.split('/').pop();
           if (!filename) return 'Untitled';
-
           return decodeURIComponent(filename)
-            .replace(/\.[^/.]+$/, "") // remove extension
-            .replace(/[_-]/g, " ")    // underscores to spaces
-            .replace(/\s+/g, " ")     // collapse spaces
+            .replace(/\.[^/.]+$/, '')
+            .replace(/[_-]/g, ' ')
+            .replace(/\s+/g, ' ')
             .trim() || 'Untitled';
         } catch (e) {
           return 'Untitled';
@@ -2270,29 +2473,14 @@
        * This function decodes it back to an ArrayBuffer.
        */
       async function fetchProxiedFile(url) {
+        // Phase 2: /file endpoint returns raw binary — just fetch and return ArrayBuffer.
         const response = await fetch(url);
         if (!response.ok) {
-          throw new Error(`Proxy fetch failed: ${response.status}`);
+          let errMsg = `File fetch failed: ${response.status}`;
+          try { const j = await response.json(); if (j.error) errMsg = j.error; } catch (_) {}
+          throw new Error(errMsg);
         }
-
-        const text = await response.text();
-
-        // Check if it's an error JSON response
-        try {
-          const json = JSON.parse(text);
-          if (json.error) throw new Error(json.error);
-        } catch (e) {
-          // Not JSON, continue with base64 decode
-        }
-
-        // Decode base64 to binary
-        const binaryString = atob(text);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-        }
-
-        return bytes.buffer;
+        return await response.arrayBuffer();
       }
 
       // ═══════════════════════════════════════════
@@ -2303,6 +2491,11 @@
 
         currentFic = fic;
         showPage('reader');
+
+        // Phase 3: initialise reading state for this file
+        const params2 = new URLSearchParams(window.location.search);
+        const uid = params2.get('user_id') || '';
+        initReadingState(fic, uid);
 
         // Ensure sidebar toggle is visible
         const sidebarToggle = document.getElementById('sidebar-toggle');
@@ -2623,8 +2816,11 @@
         document.getElementById('reader-main').scrollTo({ top: 0, behavior: 'smooth' });
         
         // Reapply reader settings after chapter content is rendered
-        // This ensures settings persist across chapter navigation
         applyReaderStyles();
+
+        // Phase 4: restore highlights for this chapter and attach selection listener
+        restoreHighlightsForChapter(idx);
+        setupTextSelection();
       }
 
       function goToChapter(idx) { renderChapter(idx); }
@@ -2980,6 +3176,30 @@
       // READER CONTROLS & UI ENHANCEMENTS
       // ═══════════════════════════════════════════
 
+
+      // ═══════════════════════════════════════════
+      // PHASE 3 & 4 STATE — Reading state, bookmarks, highlights
+      // ═══════════════════════════════════════════
+      const HIGHLIGHT_COLORS = ['#a40606','#a46318','#c28686','#8d9f72','#6d5c5c'];
+
+      // Current reading state (kept in memory, synced to Telegram)
+      let _rs = {
+        file_id: '',
+        title:   '',
+        user_id: '',
+        message_id: null,  // Telegram message_id storing this state
+        last_position: null,
+        bookmarks:  [],
+        highlights: [],
+      };
+
+      let _autoSaveTimer   = null;
+      let _pendingSync     = false;
+      let _activeSelection = null;  // { text, range }
+      let _bhnActiveTab    = 'bookmarks';
+      let _pendingNoteHlId = null;  // highlight_id waiting for a note
+      let _pendingNoteColor = null; // color for note-first flow
+
       // Reader settings state
       let readerFontSize = 100;
       let readerLineHeight = 1.85;
@@ -3076,6 +3296,486 @@
       }
 
       // Fetch title from URL params (for fixing "Untitled" issue)
+
+      // ═══════════════════════════════════════════════════════════════
+      // PHASE 3: READING STATE  — init, load, auto-save, sync to Telegram
+      // ═══════════════════════════════════════════════════════════════
+
+      function _lsKey(fileId) { return 'oracle_rs_' + fileId; }
+
+      /** Called by openReader() right after showPage. */
+      function initReadingState(fic, userId) {
+        _rs = { file_id: fic.id || fic.fileUrl || '',
+                title: fic.title || 'Untitled',
+                user_id: userId || '',
+                message_id: null,
+                last_position: null, bookmarks: [], highlights: [] };
+
+        // Load from localStorage
+        try {
+          const raw = localStorage.getItem(_lsKey(_rs.file_id));
+          if (raw) {
+            const saved = JSON.parse(raw);
+            _rs.bookmarks  = saved.bookmarks  || [];
+            _rs.highlights = saved.highlights || [];
+            _rs.last_position = saved.last_position || null;
+            _rs.message_id = saved.message_id || null;
+          }
+        } catch(e) {}
+
+        updateRibbonCount();
+
+        // Start auto-save
+        if (_autoSaveTimer) clearInterval(_autoSaveTimer);
+        _autoSaveTimer = setInterval(autoSavePosition, 60000);
+
+        // Restore last position after a short delay (let chapter render first)
+        if (_rs.last_position) {
+          setTimeout(() => restoreLastPosition(), 600);
+        }
+      }
+
+      /** Persist _rs to localStorage (fast, always). Sync to Telegram on demand. */
+      function persistState() {
+        try {
+          localStorage.setItem(_lsKey(_rs.file_id), JSON.stringify({
+            bookmarks: _rs.bookmarks, highlights: _rs.highlights,
+            last_position: _rs.last_position, message_id: _rs.message_id
+          }));
+        } catch(e) {}
+        updateRibbonCount();
+      }
+
+      /** Auto-save current scroll position every 60s. */
+      function autoSavePosition() {
+        if (!currentFic) return;
+        const main = document.getElementById('reader-main');
+        if (!main) return;
+        const scrollable = main.scrollHeight - main.clientHeight;
+        const pct = scrollable > 0 ? (main.scrollTop / scrollable) * 100 : 0;
+        _rs.last_position = { chapter_index: currentChapterIdx,
+                              scroll_percent: Math.round(pct * 10) / 10,
+                              timestamp: new Date().toISOString() };
+        persistState();
+        syncToTelegram();
+      }
+
+      /** Sync full state to Telegram message (debounced). */
+      function syncToTelegram() {
+        if (!_rs.user_id || _pendingSync) return;
+        _pendingSync = true;
+        setTimeout(async () => {
+          try {
+            const body = {
+              user_id: _rs.user_id, message_id: _rs.message_id,
+              state: { file_id: _rs.file_id, title: _rs.title,
+                       last_position: _rs.last_position,
+                       bookmarks: _rs.bookmarks, highlights: _rs.highlights }
+            };
+            const r = await fetch(`${SERVER_URL}/reading-state/${encodeURIComponent(_rs.file_id)}/sync`, {
+              method: 'POST',
+              headers: {'Content-Type':'application/json'},
+              body: JSON.stringify(body)
+            });
+            const d = await r.json();
+            if (d.message_id && d.message_id !== _rs.message_id) {
+              _rs.message_id = d.message_id;
+              persistState();
+            }
+          } catch(e) { /* offline — will sync next time */ }
+          _pendingSync = false;
+        }, 1500);
+      }
+
+      /** Scroll reader-main to the last saved position. */
+      function restoreLastPosition() {
+        const pos = _rs.last_position;
+        if (!pos) return;
+        // Navigate to chapter first
+        if (pos.chapter_index !== currentChapterIdx) {
+          renderChapter(pos.chapter_index);
+          setTimeout(() => _scrollToPercent(pos.scroll_percent), 300);
+        } else {
+          _scrollToPercent(pos.scroll_percent);
+        }
+      }
+
+      function _scrollToPercent(pct) {
+        const main = document.getElementById('reader-main');
+        if (!main) return;
+        const scrollable = main.scrollHeight - main.clientHeight;
+        main.scrollTo({ top: (pct / 100) * scrollable, behavior: 'smooth' });
+      }
+
+      function updateRibbonCount() {
+        const n = _rs.bookmarks.length + _rs.highlights.length;
+        const el = document.getElementById('ribbon-count');
+        if (el) el.textContent = n > 0 ? n : '';
+      }
+
+
+      // ═══════════════════════════════════════════════════════════════
+      // PHASE 4: BOOKMARKS
+      // ═══════════════════════════════════════════════════════════════
+
+      function addBookmark() {
+        const main = document.getElementById('reader-main');
+        const scrollable = main.scrollHeight - main.clientHeight;
+        const pct = scrollable > 0 ? (main.scrollTop / scrollable) * 100 : 0;
+        const chTitle = epubChapters[currentChapterIdx]
+          ? epubChapters[currentChapterIdx].title
+          : 'Chapter ' + (currentChapterIdx + 1);
+
+        const bm = {
+          id: 'bm_' + Date.now(),
+          chapter_index: currentChapterIdx,
+          scroll_percent: Math.round(pct * 10) / 10,
+          chapter_title: chTitle,
+          timestamp: new Date().toISOString()
+        };
+        _rs.bookmarks.push(bm);
+        persistState();
+        syncToTelegram();
+        showToast('Bookmark added 🔖');
+        updateRibbonCount();
+      }
+
+      function deleteBookmark(id) {
+        _rs.bookmarks = _rs.bookmarks.filter(b => b.id !== id);
+        persistState();
+        syncToTelegram();
+        renderBhnTab(_bhnActiveTab);
+        updateRibbonCount();
+      }
+
+      function goToBookmark(bm) {
+        closeBhnModal();
+        if (bm.chapter_index !== currentChapterIdx) {
+          renderChapter(bm.chapter_index);
+          setTimeout(() => _scrollToPercent(bm.scroll_percent), 300);
+        } else {
+          _scrollToPercent(bm.scroll_percent);
+        }
+      }
+
+
+      // ═══════════════════════════════════════════════════════════════
+      // PHASE 4: TEXT SELECTION & HIGHLIGHTS
+      // ═══════════════════════════════════════════════════════════════
+
+      function setupTextSelection() {
+        const chapter = document.querySelector('.epub-chapter');
+        if (!chapter) return;
+        // Remove old listener to avoid duplicates
+        chapter.removeEventListener('mouseup', _onTextMouseUp);
+        chapter.removeEventListener('touchend', _onTextMouseUp);
+        chapter.addEventListener('mouseup',  _onTextMouseUp);
+        chapter.addEventListener('touchend', _onTextMouseUp);
+        // Close popup on click outside
+        document.addEventListener('mousedown', _outsidePopupClose, { capture: true });
+      }
+
+      function _onTextMouseUp(e) {
+        setTimeout(() => {
+          const sel = window.getSelection();
+          const text = sel ? sel.toString().trim() : '';
+          if (!text || text.length < 2) { hideSelectionPopup(); return; }
+          _activeSelection = { text, range: sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null };
+          const rect = sel.getRangeAt(0).getBoundingClientRect();
+          showSelectionPopup(rect.left + rect.width / 2, rect.top - 8);
+        }, 10);
+      }
+
+      function _outsidePopupClose(e) {
+        const pop = document.getElementById('selection-popup');
+        const note = document.getElementById('note-popup');
+        if (pop && !pop.contains(e.target)) hideSelectionPopup();
+        if (note && !note.contains(e.target)) closeNotePopup();
+      }
+
+      function showSelectionPopup(cx, cy) {
+        const pop = document.getElementById('selection-popup');
+        document.getElementById('color-picker-row').classList.remove('show');
+        pop.classList.add('show');
+        // Smart positioning — keep inside viewport
+        const w = pop.offsetWidth || 134;
+        const h = pop.offsetHeight || 80;
+        let left = cx - w / 2;
+        let top  = cy - h - 6;
+        left = Math.max(8, Math.min(left, window.innerWidth - w - 8));
+        top  = top < 8 ? cy + 28 : top;
+        pop.style.left = left + 'px';
+        pop.style.top  = top  + 'px';
+      }
+
+      function hideSelectionPopup() {
+        document.getElementById('selection-popup').classList.remove('show');
+        document.getElementById('color-picker-row').classList.remove('show');
+        _activeSelection = null;
+      }
+
+      function showColorPicker() {
+        document.getElementById('color-picker-row').classList.toggle('show');
+      }
+
+      /** Wrap selected text in a <mark> and save highlight. */
+      function applyHighlight(color) {
+        if (!_activeSelection || !_activeSelection.range) {
+          hideSelectionPopup(); return;
+        }
+        const hlId = 'hl_' + Date.now();
+        const range = _activeSelection.range;
+        const text  = _activeSelection.text;
+
+        // Wrap in mark element
+        try {
+          const mark = document.createElement('mark');
+          mark.setAttribute('data-color', color);
+          mark.setAttribute('data-hl-id', hlId);
+          mark.style.background = color;
+          mark.addEventListener('click', () => openBhnModal('highlights'));
+          range.surroundContents(mark);
+        } catch(e) {
+          // surroundContents fails on multi-element ranges — use extractContents
+          try {
+            const frag = range.extractContents();
+            const mark = document.createElement('mark');
+            mark.setAttribute('data-color', color);
+            mark.setAttribute('data-hl-id', hlId);
+            mark.style.background = color;
+            mark.addEventListener('click', () => openBhnModal('highlights'));
+            mark.appendChild(frag);
+            range.insertNode(mark);
+          } catch(e2) { hideSelectionPopup(); return; }
+        }
+
+        window.getSelection().removeAllRanges();
+        hideSelectionPopup();
+
+        const hl = {
+          id: hlId, chapter_index: currentChapterIdx,
+          text: text.slice(0, 500), color: color, note: null,
+          timestamp: new Date().toISOString()
+        };
+        _rs.highlights.push(hl);
+        persistState();
+        syncToTelegram();
+        updateRibbonCount();
+        showToast('Highlighted ✹');
+      }
+
+      /** "Add Note" in selection popup — highlights with default color first, then asks for note. */
+      function selAddNote() {
+        if (!_activeSelection) return;
+        _pendingNoteColor = '#a40606';
+        _pendingNoteHlId = null;
+        // Apply highlight first, then open note popup
+        applyHighlight(_pendingNoteColor);
+        // Find the highlight we just added
+        const latestHl = _rs.highlights[_rs.highlights.length - 1];
+        if (latestHl) {
+          _pendingNoteHlId = latestHl.id;
+          openNotePopup(window.innerWidth / 2 - 132, window.innerHeight / 2 - 80);
+        }
+      }
+
+      /** Restore all highlight marks for the just-rendered chapter. */
+      function restoreHighlightsForChapter(chIdx) {
+        const chHls = _rs.highlights.filter(h => h.chapter_index === chIdx);
+        if (!chHls.length) return;
+        const chapter = document.querySelector('.epub-chapter');
+        if (!chapter) return;
+        // We can't re-wrap text nodes after innerHTML replacement without
+        // exact range tracking — instead we use a text-search approach.
+        chHls.forEach(hl => {
+          _markTextInElement(chapter, hl.text, hl.color, hl.id);
+        });
+      }
+
+      function _markTextInElement(root, searchText, color, hlId) {
+        if (!searchText || searchText.length < 2) return;
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+        let node;
+        while ((node = walker.nextNode())) {
+          const idx = node.textContent.indexOf(searchText);
+          if (idx === -1) continue;
+          const range = document.createRange();
+          range.setStart(node, idx);
+          range.setEnd(node, idx + searchText.length);
+          try {
+            const mark = document.createElement('mark');
+            mark.setAttribute('data-color', color);
+            mark.setAttribute('data-hl-id', hlId);
+            mark.addEventListener('click', () => openBhnModal('highlights'));
+            range.surroundContents(mark);
+          } catch(e) { /* overlapping range — skip */ }
+          return; // only mark first occurrence
+        }
+      }
+
+      function deleteHighlight(id) {
+        // Remove mark from DOM
+        const el = document.querySelector(`mark[data-hl-id="${id}"]`);
+        if (el) { el.outerHTML = el.innerHTML; }
+        _rs.highlights = _rs.highlights.filter(h => h.id !== id);
+        persistState();
+        syncToTelegram();
+        renderBhnTab(_bhnActiveTab);
+        updateRibbonCount();
+      }
+
+
+      // ═══════════════════════════════════════════════════════════════
+      // PHASE 4: NOTE POPUP
+      // ═══════════════════════════════════════════════════════════════
+
+      function openNotePopup(x, y) {
+        const pop = document.getElementById('note-popup');
+        document.getElementById('note-popup-text').value = '';
+        pop.classList.add('show');
+        pop.style.left = Math.max(8, Math.min(x, window.innerWidth - 280)) + 'px';
+        pop.style.top  = Math.max(8, Math.min(y, window.innerHeight - 160)) + 'px';
+        setTimeout(() => document.getElementById('note-popup-text').focus(), 50);
+      }
+
+      function closeNotePopup() {
+        document.getElementById('note-popup').classList.remove('show');
+        _pendingNoteHlId = null;
+      }
+
+      function saveNotePopup() {
+        const noteText = document.getElementById('note-popup-text').value.trim();
+        if (!noteText || !_pendingNoteHlId) { closeNotePopup(); return; }
+        const hl = _rs.highlights.find(h => h.id === _pendingNoteHlId);
+        if (hl) { hl.note = noteText; persistState(); syncToTelegram(); }
+        closeNotePopup();
+        showToast('Note saved 𑣲⋆｡˚');
+      }
+
+      /** Open note editor for an existing highlight from the modal. */
+      function editHighlightNote(hlId) {
+        _pendingNoteHlId = hlId;
+        const hl = _rs.highlights.find(h => h.id === hlId);
+        openNotePopup(window.innerWidth / 2 - 132, window.innerHeight / 2 - 80);
+        if (hl && hl.note) {
+          setTimeout(() => { document.getElementById('note-popup-text').value = hl.note; }, 60);
+        }
+      }
+
+
+      // ═══════════════════════════════════════════════════════════════
+      // PHASE 4: BHN MODAL (Bookmarks / Highlights / Notes)
+      // ═══════════════════════════════════════════════════════════════
+
+      function openBhnModal(tab) {
+        _bhnActiveTab = tab || 'bookmarks';
+        document.getElementById('bhn-modal-overlay').classList.add('show');
+        switchBhnTab(_bhnActiveTab);
+      }
+
+      function closeBhnModal() {
+        document.getElementById('bhn-modal-overlay').classList.remove('show');
+      }
+
+      function switchBhnTab(tab) {
+        _bhnActiveTab = tab;
+        ['bookmarks','highlights','notes'].forEach(t => {
+          const btn = document.getElementById('tab-' + t);
+          if (btn) btn.classList.toggle('active', t === tab);
+        });
+        renderBhnTab(tab);
+      }
+
+      function renderBhnTab(tab) {
+        const body = document.getElementById('bhn-body');
+        if (!body) return;
+        if (tab === 'bookmarks') renderBookmarks(body);
+        else if (tab === 'highlights') renderHighlights(body);
+        else if (tab === 'notes') renderNotes(body);
+      }
+
+      function _fmtTs(ts) {
+        try {
+          const d = new Date(ts);
+          return d.toLocaleString('en-US', { month:'short', day:'numeric',
+            hour:'numeric', minute:'2-digit' });
+        } catch(e) { return ts ? ts.slice(0,16) : ''; }
+      }
+
+      function renderBookmarks(body) {
+        if (!_rs.bookmarks.length) {
+          body.innerHTML = '<div class="bhn-empty">No bookmarks yet.<br>Tap <b>+</b> while reading to drop one.</div>';
+          return;
+        }
+        body.innerHTML = _rs.bookmarks.map(bm => `
+          <div class="bhn-item" onclick="goToBookmark(${JSON.stringify(bm).replace(/"/g,'&quot;')})">
+            <div class="bhn-item-title">${escHtml(bm.chapter_title)}</div>
+            <div class="bhn-item-meta">${Math.round(bm.scroll_percent)}% &middot; ${_fmtTs(bm.timestamp)}</div>
+            <button class="bhn-item-del" onclick="event.stopPropagation();deleteBookmark('${bm.id}')" title="Delete">&#x2715;</button>
+          </div>`).join('');
+        // Add Bookmark button at top
+        body.innerHTML = `<button class="bhn-item" style="margin-bottom:0.75rem;border-color:rgba(139,32,53,0.35);text-align:center;justify-content:center;"
+          onclick="addBookmark();renderBhnTab('bookmarks')">
+          <span style="color:#c4a07a;font-size:1.1rem;">🔖</span>
+          <span style="color:#c4a07a;font-family:'Cinzel Decorative',serif;font-size:0.58rem;letter-spacing:0.12em;margin-left:6px;">ADD BOOKMARK HERE</span>
+        </button>` + body.innerHTML;
+      }
+
+      function renderHighlights(body) {
+        if (!_rs.highlights.length) {
+          body.innerHTML = '<div class="bhn-empty">No highlights yet.<br>Select text while reading to highlight.</div>';
+          return;
+        }
+        body.innerHTML = _rs.highlights.map(hl => {
+          const snippet = hl.text.length > 200 ? hl.text.slice(0,200)+'…' : hl.text;
+          const noteHtml = hl.note
+            ? `<div class="bhn-item-note">✎ ${escHtml(hl.note)}</div>`
+            : `<div class="bhn-item-note" style="cursor:pointer;color:#5a3a28;" onclick="event.stopPropagation();editHighlightNote('${hl.id}')">+ add note</div>`;
+          return `
+          <div class="bhn-item" onclick="goToHighlight('${hl.id}')">
+            <span class="bhn-color-dot" style="background:${hl.color}"></span>
+            <div class="bhn-item-quote" style="border-color:${hl.color}">"${escHtml(snippet)}"</div>
+            ${noteHtml}
+            <div class="bhn-item-meta" style="margin-top:0.2rem">Ch.${hl.chapter_index+1} &middot; ${_fmtTs(hl.timestamp)}</div>
+            <button class="bhn-item-del" onclick="event.stopPropagation();deleteHighlight('${hl.id}')" title="Delete">&#x2715;</button>
+          </div>`;
+        }).join('');
+      }
+
+      function renderNotes(body) {
+        const withNotes = _rs.highlights.filter(h => h.note);
+        if (!withNotes.length) {
+          body.innerHTML = '<div class="bhn-empty">No notes yet.<br>Add a note while highlighting text.</div>';
+          return;
+        }
+        body.innerHTML = withNotes.map(hl => `
+          <div class="bhn-item" onclick="goToHighlight('${hl.id}')">
+            <span class="bhn-color-dot" style="background:${hl.color}"></span>
+            <div class="bhn-item-quote" style="border-color:${hl.color}">"${escHtml(hl.text.slice(0,120))}${hl.text.length>120?'…':''}"</div>
+            <div class="bhn-item-note">✎ ${escHtml(hl.note)}</div>
+            <div class="bhn-item-meta" style="margin-top:0.2rem">Ch.${hl.chapter_index+1} &middot; ${_fmtTs(hl.timestamp)}</div>
+            <button class="bhn-item-del" onclick="event.stopPropagation();editHighlightNote('${hl.id}')" title="Edit note" style="color:#5a3a28;">✎</button>
+          </div>`).join('');
+      }
+
+      function goToHighlight(hlId) {
+        const hl = _rs.highlights.find(h => h.id === hlId);
+        if (!hl) return;
+        closeBhnModal();
+        if (hl.chapter_index !== currentChapterIdx) {
+          renderChapter(hl.chapter_index);
+          setTimeout(() => _scrollToMark(hlId), 350);
+        } else {
+          _scrollToMark(hlId);
+        }
+      }
+
+      function _scrollToMark(hlId) {
+        const el = document.querySelector(`mark[data-hl-id="${hlId}"]`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+
       function fetchTitleFromParams() {
         const params = new URLSearchParams(window.location.search);
         return params.get('title') || null;
